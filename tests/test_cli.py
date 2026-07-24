@@ -32,18 +32,34 @@ class CliTests(unittest.TestCase):
         self.localhost_out = self.generated_root / "test-chat-medium-localhost"
         self.invalid_lan_out = self.generated_root / "test-invalid-lan-no-auth"
         self.ornith_out = self.generated_root / "test-ornith-medium-localhost"
+        self.wizard_out = self.generated_root / "test-wizard-ornith-medium-localhost"
+        self.wizard_overwrite_out = self.generated_root / "test-wizard-overwrite-ornith-medium-localhost"
         self.all_outputs = [
             self.dry_run_out,
             self.localhost_out,
             self.invalid_lan_out,
             self.ornith_out,
+            self.wizard_out,
+            self.wizard_overwrite_out,
         ]
         for path in self.all_outputs:
             shutil.rmtree(path, ignore_errors=True)
 
+        # Wizard preflight expects ./models/<preset>.gguf to exist.
+        # We create a tiny dummy file for the preset(s) used in tests.
+        self.models_dir = ROOT / "models"
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        (self.models_dir / "ornith-9b.gguf").write_text("dummy", encoding="utf-8")
+
     def tearDown(self):
         for path in self.all_outputs:
             shutil.rmtree(path, ignore_errors=True)
+
+        # Keep repo clean: remove dummy models added for tests.
+        try:
+            (self.models_dir / "ornith-9b.gguf").unlink(missing_ok=True)
+        except Exception:
+            pass
 
     def test_lists_profiles_and_setups(self):
         profiles = self.run_cli("list", "profiles", check=True)
@@ -198,6 +214,90 @@ class CliTests(unittest.TestCase):
 
         validation = self.run_cli("validate", str(self.localhost_out.relative_to(ROOT)), check=True)
         self.assertIn("valid", validation.stdout.lower())
+
+    def test_wizard_generates_and_validates_localhost(self):
+        result = self.run_cli(
+            "wizard",
+            "--preset",
+            "ornith-9b",
+            "--profile",
+            "medium",
+            "--out",
+            str(self.wizard_out.relative_to(ROOT)),
+            "--run",
+            "no",
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+        required = [
+            "docker-compose.yml",
+            ".env",
+            "manifest.json",
+            "README.md",
+            "runbook.md",
+            "scripts/start.sh",
+            "scripts/validate.sh",
+            "scripts/smoke.sh",
+        ]
+        for rel in required:
+            self.assertTrue((self.wizard_out / rel).is_file(), rel)
+
+    def test_wizard_fails_missing_model(self):
+        out = self.generated_root / "test-wizard-missing-model"
+        shutil.rmtree(out, ignore_errors=True)
+
+        result = self.run_cli(
+            "wizard",
+            "--preset",
+            "phi-4-14b",
+            "--profile",
+            "medium",
+            "--out",
+            str(out.relative_to(ROOT)),
+            "--run",
+            "no",
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        combined = result.stdout + result.stderr
+        self.assertIn("Missing model file", combined)
+        self.assertFalse(out.exists())
+
+    def test_wizard_overwrite_when_dir_exists(self):
+        self.wizard_overwrite_out.mkdir(parents=True, exist_ok=True)
+
+        # Without --overwrite it should fail (non-interactive).
+        result = self.run_cli(
+            "wizard",
+            "--preset",
+            "ornith-9b",
+            "--profile",
+            "medium",
+            "--out",
+            str(self.wizard_overwrite_out.relative_to(ROOT)),
+            "--run",
+            "no",
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+
+        # With --overwrite it should succeed.
+        result2 = self.run_cli(
+            "wizard",
+            "--preset",
+            "ornith-9b",
+            "--profile",
+            "medium",
+            "--out",
+            str(self.wizard_overwrite_out.relative_to(ROOT)),
+            "--run",
+            "no",
+            "--overwrite",
+            check=False,
+        )
+        self.assertEqual(result2.returncode, 0, msg=result2.stdout + result2.stderr)
+        self.assertTrue((self.wizard_overwrite_out / "docker-compose.yml").is_file())
 
     def test_rejects_lan_generation_without_auth_and_allowlist(self):
         result = self.run_cli(

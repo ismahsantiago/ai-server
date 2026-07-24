@@ -5,6 +5,21 @@ to a local chat endpoint.
 
 ## 1) Quick local chat setup
 
+### Optional: use the interactive wizard (localhost only)
+
+If you have the preset model weight file present at `./models/<preset>.gguf`,
+you can run:
+
+```bash
+python3 -m ai_server_generator wizard \
+  --preset ornith-9b \
+  --profile medium \
+  --run no
+```
+
+It will generate + validate into `generated/<preset>-<profile>-localhost/`
+and leave you with `scripts/start.sh` and `scripts/smoke.sh`.
+
 From repository root:
 
 ```bash

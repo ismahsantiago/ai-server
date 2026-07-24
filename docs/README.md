@@ -40,8 +40,18 @@ Use this sequence as the default path for Sprint 1 and onward:
 5. **Start (from generated workspace)**
 
    ```bash
-   ./generated/ornith-medium-localhost/scripts/start.sh
-   ```
+    ./generated/ornith-medium-localhost/scripts/start.sh
+    ```
+
+### Friendlier wrapper: wizard (localhost only)
+
+For a more guided experience you can use:
+
+```bash
+python3 -m ai_server_generator wizard --preset ornith-9b --profile medium --run no
+```
+
+The wizard wraps the canonical `matrix → generate → validate` flow and leaves you with `generated/<preset>-<profile>-localhost/scripts/` helpers.
 
 ## Legacy compatibility assets (non-canonical)
 
