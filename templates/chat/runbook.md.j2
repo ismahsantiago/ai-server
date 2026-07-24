@@ -1,0 +1,46 @@
+# Runbook — {{ setup }} / {{ profile }} / {{ access }}
+
+## Expanded configuration
+
+- Setup: `{{ resolved_setup }}`
+- Profile: `{{ resolved_profile }}`
+- Access: `{{ resolved_access }}`
+- Preset alias: `{% if preset_alias %}{{ preset_alias }}{% else %}custom{% endif %}`
+{% if preset_name %}- Preset name: `{{ preset_name }}` — {{ preset_summary }}
+{% endif %}
+- Capability tags: `{{ capability_tags }}`
+- Memory guidance: {{ memory_guidance }}
+
+## Access model
+
+{% if access == "lan" %}
+LAN access is enabled. Non-negotiable controls:
+
+1. **Authentication**: static bearer token (`API_BEARER_TOKEN` in `.env`).
+   Requests without a valid `Authorization: Bearer` header are rejected.
+2. **Allowlist**: only the source ranges in `LAN_ALLOWLIST`
+   (`{{ lan_allowlist }}`) may reach the serving port; deny everything else at
+   the firewall.
+3. **Token handling**: keep tokens out of version control, rotate on
+   personnel/device changes.
+4. **Auditability**: keep access logs in `logs/` with timestamp and source IP.
+{% else %}
+Localhost-only access. The stack binds to `127.0.0.1:{{ host_port }}` and is not
+reachable from the LAN. To expose it on the LAN, regenerate with
+`--access lan --auth bearer-token --lan-allowlist <cidr>`; the generator refuses
+LAN output without both controls.
+{% endif %}
+
+## Operations
+
+- Start: `{{ quick_start_command }}`
+- Benchmark: `{{ quick_smoke_command }}`
+- Host validation: `{{ quick_validate_command }}`
+- Full script references: `./scripts/start_serving.sh`, `./scripts/smoke_benchmark.sh`, `./scripts/validate_host.sh`
+
+## Model
+
+- Host model path: `{{ model_path }}`
+- Container model path: `{{ container_model_path }}`
+
+Place a real `.gguf` model before serving; the placeholder path is inert.

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TS="$(date -u +%Y%m%d-%H%M%S)"
+mkdir -p logs/benchmarks
+OUT="logs/benchmarks/smoke-benchmark-${TS}.md"
+PROFILE="{{ profile }}"
+HOST_PORT="{{ host_port }}"
+
+HTTP_STATUS="not-tested"
+LATENCY_MS="placeholder"
+MEMORY_MB="placeholder"
+
+if command -v curl >/dev/null 2>&1; then
+  TMP_JSON="$(mktemp)"
+  if curl -sS -o "$TMP_JSON" -w "%{http_code}" \
+    -X POST "http://127.0.0.1:${HOST_PORT}/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+{% if access == "lan" %}
+    -H "Authorization: Bearer ${API_BEARER_TOKEN:-}" \
+{% endif %}
+    -d '{"model":"local","messages":[{"role":"user","content":"Respond with OK."}],"max_tokens":8}' \
+    > /tmp/ai-server-http-code.txt 2>/dev/null; then
+    HTTP_STATUS="$(cat /tmp/ai-server-http-code.txt)"
+    if [ "$HTTP_STATUS" = "200" ]; then
+      LATENCY_MS="measured-via-client-timing"
+    fi
+  fi
+  rm -f "$TMP_JSON"
+fi
+
+cat > "$OUT" <<EOF
+# Smoke Benchmark Report
+
+- Timestamp (UTC): ${TS}
+- Profile: ${PROFILE}
+- Endpoint: http://127.0.0.1:${HOST_PORT}/v1/chat/completions
+
+| Metric | Value |
+|---|---|
+| HTTP status | ${HTTP_STATUS} |
+| First-response latency | ${LATENCY_MS} |
+| Container memory snapshot | ${MEMORY_MB} |
+EOF
+
+printf "Wrote %s\n" "$OUT"

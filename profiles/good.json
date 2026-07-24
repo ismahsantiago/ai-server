@@ -1,0 +1,11 @@
+{
+  "name": "good",
+  "description": "Higher quality target with increased context and memory budget.",
+  "host_port": "8000",
+  "ctx_size": "6144",
+  "batch_size": "384",
+  "threads": "8",
+  "n_predict": "384",
+  "mem_limit": "10g",
+  "cpu_limit": "8.0"
+}

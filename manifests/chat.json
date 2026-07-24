@@ -1,0 +1,20 @@
+{
+  "name": "chat",
+  "description": "OpenAI-compatible local chat endpoint using llama.cpp server.",
+  "default_profile": "medium",
+  "supported_profiles": ["medium-fast", "medium", "good"],
+  "supported_access": ["localhost", "lan"],
+  "required_files": [
+    "docker-compose.yml",
+    ".env",
+    "manifest.json",
+    "README.md",
+    "runbook.md",
+    "scripts/start.sh",
+    "scripts/validate.sh",
+    "scripts/smoke.sh",
+    "scripts/start_serving.sh",
+    "scripts/smoke_benchmark.sh",
+    "scripts/validate_host.sh"
+  ]
+}

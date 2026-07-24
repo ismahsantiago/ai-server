@@ -1,0 +1,27 @@
+generated/
+
+# AI
+.claude/
+.opencode/
+.codex/
+.pm-harness/
+CLAUDE.md
+AGENTS.md
+
+# Environment files
+.env
+.env.example
+.env.local
+.env.*.local
+.ignore
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

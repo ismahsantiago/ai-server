@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Generated for setup={{ setup }} profile={{ profile }} access={{ access }}
+
+if [ ! -f .env ]; then
+  printf "No .env found in generated workspace.\n" >&2
+  exit 1
+fi
+
+{% if access == "lan" %}
+if ! grep -q '^API_BEARER_TOKEN=' .env; then
+  printf "LAN access requires API_BEARER_TOKEN in .env.\n" >&2
+  exit 1
+fi
+{% endif %}
+
+docker compose up -d
+docker compose ps

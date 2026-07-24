@@ -1,0 +1,11 @@
+{
+  "name": "medium",
+  "description": "Default balance for quality and speed under 12 GB hosts.",
+  "host_port": "8000",
+  "ctx_size": "4096",
+  "batch_size": "256",
+  "threads": "6",
+  "n_predict": "256",
+  "mem_limit": "8g",
+  "cpu_limit": "6.0"
+}

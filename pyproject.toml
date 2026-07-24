@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-server-generator"
+version = "0.1.0"
+description = "Generator-first CLI skeleton for local ai-server workspaces."
+requires-python = ">=3.10"
+dependencies = [
+  "Jinja2>=3.1,<4",
+]
+
+[project.scripts]
+ai-server = "ai_server_generator.cli:main"
+
+[tool.setuptools]
+packages = ["ai_server_generator"]

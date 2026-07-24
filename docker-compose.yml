@@ -1,0 +1,46 @@
+# COMPATIBILITY EXAMPLE (legacy root artifact)
+# Canonical path: generate a workspace and run its emitted compose/scripts.
+# Equivalent generated file: generated/<preset-profile-access>/docker-compose.yml
+services:
+  llama-server:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    container_name: ai-lab-llama-server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${HOST_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    command:
+      - --model
+      - ${MODEL_PATH:-/models/placeholder.gguf}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --ctx-size
+      - ${CTX_SIZE:-4096}
+      - --threads
+      - ${THREADS:-6}
+      - --batch-size
+      - ${BATCH_SIZE:-256}
+      - --n-predict
+      - ${N_PREDICT:-256}
+      - --metrics
+      - --cont-batching
+    volumes:
+      - ./models:/models:ro
+      - ./logs:/logs
+    mem_limit: ${MEM_LIMIT:-8g}
+    cpus: ${CPU_LIMIT:-6.0}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m

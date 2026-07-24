@@ -1,0 +1,11 @@
+{
+  "name": "medium-fast",
+  "description": "Lower memory and faster response target.",
+  "host_port": "8000",
+  "ctx_size": "2048",
+  "batch_size": "128",
+  "threads": "4",
+  "n_predict": "192",
+  "mem_limit": "6g",
+  "cpu_limit": "4.0"
+}
