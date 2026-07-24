@@ -16,7 +16,6 @@ from ai_server_generator.render import (
     render_workspace,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 
@@ -949,6 +948,10 @@ case "$*" in
     python3 - <<'PY'
 import json
 import os
+override = os.environ.get("FAKE_CONFIG_JSON")
+if override:
+    print(override)
+    raise SystemExit(0)
 print(json.dumps({"services": {"llama-server": {
   "image": os.environ["FAKE_SERVING_IMAGE"],
   "ports": [{"host_ip": "127.0.0.1", "published": "8000", "target": 8000}],
@@ -1114,6 +1117,231 @@ esac
                 unreadable.chmod(0o644)
                 unreadable.unlink(missing_ok=True)
                 wrong_extension.unlink(missing_ok=True)
+
+    def _good_service(self, manifest):
+        return {
+            "image": manifest["serving_image"],
+            "ports": [{"host_ip": "127.0.0.1", "published": "8000", "target": 8000}],
+            "user": "65532:65532",
+            "privileged": False,
+            "cap_drop": ["ALL"],
+            "security_opt": ["no-new-privileges:true"],
+            "read_only": True,
+            "tmpfs": ["/tmp:size=256m"],
+            "pids_limit": 256,
+            "cpus": 6.0,
+            "mem_limit": 8589934592,
+            "volumes": [
+                {
+                    "type": "bind",
+                    "source": manifest["host_model_path"],
+                    "target": "/models/model.gguf",
+                    "read_only": True,
+                }
+            ],
+            "command": ["--model", "/models/model.gguf"],
+        }
+
+    def test_host_tier_rejects_one_resolved_service_mutation_at_a_time(self):
+        self._generate_runtime_fixture()
+        manifest = json.loads((self.runtime_out / "manifest.json").read_text(encoding="utf-8"))
+
+        def mutate(**changes):
+            service = self._good_service(manifest)
+            service.update(changes)
+            return service
+
+        mutations = [
+            (mutate(image="ghcr.io/ggml-org/llama.cpp:server"),
+             "resolved Compose image must match manifest serving_image"),
+            (mutate(ports=[]), "must publish exactly one localhost port"),
+            (mutate(ports=[{"host_ip": "0.0.0.0", "published": "8000", "target": 8000}]),
+             "must bind explicitly to 127.0.0.1"),
+            (mutate(user="0:0"), "must declare a non-root user and group"),
+            (mutate(privileged=True), "must not be privileged"),
+            (mutate(cap_drop=[]), "must drop ALL capabilities"),
+            (mutate(security_opt=[]), "must set no-new-privileges:true"),
+            (mutate(read_only=False), "root filesystem must be read-only"),
+            (mutate(tmpfs=[]), "must provide a bounded /tmp tmpfs"),
+            (mutate(pids_limit=0), "must set a positive PID limit"),
+            (mutate(cpus="nan"), "must set a positive cpus resource limit"),
+            (mutate(mem_limit=0), "must set a positive mem_limit resource limit"),
+            (mutate(volumes=[]), "must have a read-only model mount"),
+            (mutate(command="not-a-list"), "serving command must be an argument array"),
+            (mutate(command=["--host", "0.0.0.0"]), "serving command must declare --model"),
+            (mutate(command=["--model", "/models/other.gguf"]),
+             "serving command model path must match manifest"),
+            (mutate(command=["--model", "/models/model.gguf", "--api-key", "x"]),
+             "must not enable bearer-token auth"),
+        ]
+
+        with tempfile.TemporaryDirectory() as temporary:
+            env, _ = self._fake_runtime_env(Path(temporary))
+            for service, expected in mutations:
+                with self.subTest(expected=expected):
+                    env["FAKE_CONFIG_JSON"] = json.dumps(
+                        {"services": {"llama-server": service}}
+                    )
+                    result = self.run_cli(
+                        "validate",
+                        str(self.runtime_out.relative_to(ROOT)),
+                        "--tier",
+                        "host",
+                        env=env,
+                    )
+                    self.assertNotEqual(result.returncode, 0, msg=result.stdout)
+                    self.assertIn(expected, result.stderr)
+
+    def test_host_tier_rejects_writable_bind_and_wrong_model_source(self):
+        self._generate_runtime_fixture()
+        manifest = json.loads((self.runtime_out / "manifest.json").read_text(encoding="utf-8"))
+
+        writable = self._good_service(manifest)
+        writable["volumes"] = [
+            {
+                "type": "bind",
+                "source": manifest["host_model_path"],
+                "target": "/models/model.gguf",
+                "read_only": False,
+            }
+        ]
+        wrong_source = self._good_service(manifest)
+        wrong_source["volumes"] = [
+            {
+                "type": "bind",
+                "source": "/somewhere/else.gguf",
+                "target": "/models/model.gguf",
+                "read_only": True,
+            }
+        ]
+
+        cases = [
+            (writable, "must not have writable host bind mounts"),
+            (wrong_source, "serving model bind source must match manifest host_model_path"),
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            env, _ = self._fake_runtime_env(Path(temporary))
+            for service, expected in cases:
+                with self.subTest(expected=expected):
+                    env["FAKE_CONFIG_JSON"] = json.dumps(
+                        {"services": {"llama-server": service}}
+                    )
+                    result = self.run_cli(
+                        "validate",
+                        str(self.runtime_out.relative_to(ROOT)),
+                        "--tier",
+                        "host",
+                        env=env,
+                    )
+                    self.assertNotEqual(result.returncode, 0, msg=result.stdout)
+                    self.assertIn(expected, result.stderr)
+
+    def test_host_tier_rejects_wrong_service_set(self):
+        self._generate_runtime_fixture()
+        with tempfile.TemporaryDirectory() as temporary:
+            env, _ = self._fake_runtime_env(Path(temporary))
+            env["FAKE_CONFIG_JSON"] = json.dumps({"services": {"other": {}}})
+            result = self.run_cli(
+                "validate",
+                str(self.runtime_out.relative_to(ROOT)),
+                "--tier",
+                "host",
+                env=env,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("exactly the llama-server service", result.stderr)
+
+    def test_structure_tier_reports_manifest_defects(self):
+        manifest_path = self.security_out / "manifest.json"
+
+        def check(mutate, expected):
+            self._generate_security_fixture()
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            mutate(manifest)
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            result = self.run_cli("validate", str(self.security_out.relative_to(ROOT)))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(expected, result.stderr)
+
+        def drop_key(m):
+            del m["memory_guidance"]
+
+        def unsafe_required(m):
+            m["required_files"] = ["../escape"]
+
+        def non_string_required(m):
+            m["required_files"] = [123]
+
+        def bad_posture_value(m):
+            m["security_posture"]["exposure"] = "public"
+
+        def extra_posture_claim(m):
+            m["security_posture"]["extra"] = "nope"
+
+        def missing_contract_key(m):
+            del m["model_contract"]["architecture"]
+
+        def bad_contract_version(m):
+            m["model_contract"]["contract_version"] = 2
+
+        def bad_metadata_status(m):
+            m["model_contract"]["metadata_status"] = "verified-somehow"
+
+        def contract_not_object(m):
+            m["model_contract"] = "not-an-object"
+
+        def missing_required_file(m):
+            m["required_files"] = m["required_files"] + ["scripts/ghost.sh"]
+
+        def quick_commands_not_object(m):
+            m["quick_commands"] = []
+
+        def access_not_localhost(m):
+            m["access"] = "lan"
+
+        def auth_not_none(m):
+            m["auth"] = "bearer-token"
+
+        def claims_allowlist(m):
+            m["lan_allowlist"] = "10.0.0.0/8"
+
+        cases = [
+            (drop_key, "manifest missing key: memory_guidance"),
+            (unsafe_required, "unsafe required file path: ../escape"),
+            (non_string_required, "required_files entries must be non-empty strings"),
+            (missing_required_file, "missing or unsafe required file: scripts/ghost.sh"),
+            (bad_posture_value, "security_posture.exposure must be localhost-only"),
+            (extra_posture_claim, "security_posture contains unsupported claims"),
+            (missing_contract_key, "model_contract missing keys: architecture"),
+            (bad_contract_version, "model_contract.contract_version must be 1"),
+            (bad_metadata_status, "model_contract.metadata_status is unsupported"),
+            (contract_not_object, "model_contract must be an object"),
+            (quick_commands_not_object, "quick_commands must be an object"),
+            (access_not_localhost, "only localhost generated workspaces are supported"),
+            (auth_not_none, "localhost workspace auth must be none"),
+            (claims_allowlist, "must not claim a LAN allowlist"),
+        ]
+        for mutate, expected in cases:
+            with self.subTest(expected=expected):
+                check(mutate, expected)
+
+    def test_structure_tier_reports_dotenv_parse_errors(self):
+        self._generate_security_fixture()
+        env_path = self.security_out / ".env"
+
+        cases = [
+            ("PROFILE_NAME 'medium'\n", 0o600, "not a key=value assignment"),
+            ("PROFILE_NAME='medium'\nPROFILE_NAME='good'\n", 0o600,
+             "invalid or duplicate key"),
+            ("PROFILE_NAME='medium'\n", 0o644, ".env must have mode 0600"),
+        ]
+        for content, mode, expected in cases:
+            with self.subTest(expected=expected):
+                env_path.write_text(content, encoding="utf-8")
+                env_path.chmod(mode)
+                result = self.run_cli("validate", str(self.security_out.relative_to(ROOT)))
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(expected, result.stderr)
 
     def test_generated_lifecycle_scripts_are_cwd_independent_bounded_and_stop(self):
         self._generate_runtime_fixture()

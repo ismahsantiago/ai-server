@@ -16,7 +16,6 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from .data import PROJECT_ROOT, load_profiles, load_setups, templates_dir
 
-
 TEMPLATE_MAP = {
     "docker-compose.yml": "docker-compose.yml.j2",
     ".env": "env.j2",

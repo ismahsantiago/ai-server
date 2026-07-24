@@ -8,7 +8,7 @@ from typing import Any
 
 from .data import load_profiles, load_setups, ordered_profile_names, setup_listing_names
 from .presets import ModelPreset, ordered_presets, resolve_preset
-from .render import build_context, planned_files, render_workspace, resolve_output_path
+from .render import build_context, render_workspace, resolve_output_path
 from .validator import validate_workspace
 
 
@@ -430,7 +430,8 @@ def main(argv: list[str] | None = None) -> int:
             )
 
             try:
-                ctx = build_context(
+                # Probe the scenario; build_context raises on an invalid one.
+                build_context(
                     setup_name=resolved["setup"],
                     profile_name=resolved["profile"],
                     access=resolved["access"],

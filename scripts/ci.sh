@@ -107,10 +107,17 @@ while IFS= read -r -d '' script; do
   shellcheck "${script}"
 done < <(find scripts "${OUTPUT_DIR}/scripts" -type f -name '*.sh' -print0)
 
-python3 .pm-harness/bin/harness.py validate
-python3 .pm-harness/bin/harness.py agents check
-python3 .pm-harness/bin/harness.py wiki check
-python3 .pm-harness/bin/harness.py plan check TASK-0007
+# The PM Harness lives entirely under .pm-harness/, which is intentionally not
+# committed (project-isolation invariant). It is present in a developer checkout
+# but absent on a clean CI clone, so run its gates only when it exists.
+if [ -f .pm-harness/bin/harness.py ]; then
+  python3 .pm-harness/bin/harness.py validate
+  python3 .pm-harness/bin/harness.py agents check
+  python3 .pm-harness/bin/harness.py wiki check
+  python3 .pm-harness/bin/harness.py plan check TASK-0007
+else
+  echo "PM Harness not present in this checkout; skipping harness gates."
+fi
 
 shasum -a 256 -c \
   audits/audit_opencode_default_gpt-5_24-07-2026/pre-remediation.sha256

@@ -18,7 +18,6 @@ from .render import (
     resolve_output_path,
 )
 
-
 REQUIRED_MANIFEST_KEYS = {
     "schema",
     "setup",
@@ -221,7 +220,7 @@ def _validate_service(
     for key in ("cpus", "mem_limit"):
         value = service.get(key)
         try:
-            bounded = float(value) > 0
+            bounded = value is not None and float(value) > 0
         except (TypeError, ValueError):
             bounded = False
         if not bounded:
