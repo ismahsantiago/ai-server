@@ -18,7 +18,10 @@ if [ ! -f "${ENV_FILE}" ]; then
   exit 1
 fi
 
-env_mode="$(stat -f '%Lp' "${ENV_FILE}" 2>/dev/null || stat -c '%a' "${ENV_FILE}" 2>/dev/null || true)"
+# GNU stat first (Linux); BSD stat (macOS) rejects -c and falls through to -f.
+# The reverse order is wrong: GNU reads -f as --file-system and succeeds with
+# verbose output, so the BSD form would never be reached on Linux.
+env_mode="$(stat -c '%a' "${ENV_FILE}" 2>/dev/null || stat -f '%Lp' "${ENV_FILE}" 2>/dev/null || true)"
 if [ "$env_mode" != "600" ]; then
   printf ".env must have mode 0600 before startup (found %s).\n" "${env_mode:-unknown}" >&2
   exit 1

@@ -24,7 +24,10 @@ if grep -qE '^(API_BEARER_TOKEN|LAN_ALLOWLIST)=' "${ENV_FILE}"; then
   printf "Unsupported LAN credential or policy found in localhost workspace.\n" >&2
   fail=1
 fi
-env_mode="$(stat -f '%Lp' "${ENV_FILE}" 2>/dev/null || stat -c '%a' "${ENV_FILE}" 2>/dev/null || true)"
+# GNU stat first (Linux); BSD stat (macOS) rejects -c and falls through to -f.
+# The reverse order is wrong: GNU reads -f as --file-system and succeeds with
+# verbose output, so the BSD form would never be reached on Linux.
+env_mode="$(stat -c '%a' "${ENV_FILE}" 2>/dev/null || stat -f '%Lp' "${ENV_FILE}" 2>/dev/null || true)"
 if [ "$env_mode" != "600" ]; then
   printf ".env must have mode 0600 (found %s).\n" "${env_mode:-unknown}" >&2
   fail=1
