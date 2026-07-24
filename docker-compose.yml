@@ -3,7 +3,7 @@
 # Equivalent generated file: generated/<preset-profile-access>/docker-compose.yml
 services:
   llama-server:
-    image: ghcr.io/ggerganov/llama.cpp:server
+    image: ghcr.io/ggml-org/llama.cpp:server@sha256:4f02c560799a1569be08b0183d52b94b0d4a6e4b88f52f20562d2334c73837d4
     container_name: ai-lab-llama-server
     restart: unless-stopped
     ports:
@@ -30,9 +30,10 @@ services:
       - --cont-batching
     volumes:
       - ./models:/models:ro
-      - ./logs:/logs
     mem_limit: ${MEM_LIMIT:-8g}
     cpus: ${CPU_LIMIT:-6.0}
+    pids_limit: 256
+    user: "${CONTAINER_UID:-65532}:${CONTAINER_GID:-65532}"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/health"]
       interval: 10s
@@ -41,6 +42,8 @@ services:
       start_period: 20s
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     read_only: true
     tmpfs:
       - /tmp:size=256m

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools==81.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,24 @@ name = "ai-server-generator"
 version = "0.1.0"
 description = "Generator-first CLI skeleton for local ai-server workspaces."
 requires-python = ">=3.10"
+# Private project for personal use. It carries no license because it is not
+# distributed, published, or shared; "all rights reserved" applies by default.
+# The classifier below makes an accidental PyPI upload fail rather than succeed.
+# If distribution is ever intended, a license and a third-party notice review
+# become prerequisites (see audits/ LEG-001).
+classifiers = ["Private :: Do Not Upload"]
 dependencies = [
-  "Jinja2>=3.1,<4",
+  "Jinja2==3.1.6",
+  "MarkupSafe==3.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "coverage==7.10.7",
+  "mypy==1.18.2",
+  "packaging==24.0",
+  "pip-audit==2.9.0",
+  "ruff==0.13.2",
 ]
 
 [project.scripts]
@@ -16,3 +32,25 @@ ai-server = "ai_server_generator.cli:main"
 
 [tool.setuptools]
 packages = ["ai_server_generator"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+patch = ["subprocess"]
+source = ["ai_server_generator"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.mypy]
+files = ["ai_server_generator"]
+python_version = "3.10"
+warn_unused_configs = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

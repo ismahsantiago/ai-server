@@ -25,10 +25,12 @@ Use this sequence as the default path for Sprint 1 and onward:
    python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access localhost
    ```
 
+   `GO` confirms static generator compatibility only, not runtime/model support.
+
 3. **Generate**
 
    ```bash
-   python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost --force
+   python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost
    ```
 
 4. **Validate**
@@ -40,8 +42,14 @@ Use this sequence as the default path for Sprint 1 and onward:
 5. **Start (from generated workspace)**
 
    ```bash
-    ./generated/ornith-medium-localhost/scripts/start.sh
-    ```
+   mkdir -p generated/ornith-medium-localhost/models
+   cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
+   cd generated/ornith-medium-localhost
+   ./scripts/start.sh
+   ```
+
+Static validation does not confirm model visibility or Docker health. The
+workspace-local model copy is required by the current generated Compose layout.
 
 ### Friendlier wrapper: wizard (localhost only)
 

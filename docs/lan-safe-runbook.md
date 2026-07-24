@@ -1,11 +1,26 @@
-# LAN-Safe Runbook (localhost default, LAN opt-in)
+# LAN-Safe Runbook (localhost only; LAN not available)
+
+## Current status: LAN generation is refused
+
+`--access lan`, `--auth bearer-token`, and `--lan-allowlist` are **rejected by
+the generator**. There is no supported path to produce a LAN workspace from this
+repository today, and the validator refuses any workspace that claims LAN
+access, an auth mode other than `none`, or an allowlist.
+
+This is deliberate: the generator could record those values but could not
+enforce them, and a workspace that *claims* a control it does not apply is worse
+than one that refuses to exist.
 
 ## Security default
 
 - The baseline in `docker-compose.yml` binds to `127.0.0.1` only.
-- LAN exposure is **disabled by default**.
+- LAN exposure is **disabled and cannot be enabled through the generator**.
 
-## LAN opt-in checklist (must complete all)
+## Requirements before LAN could be enabled (not yet implemented)
+
+The checklist below is the design target for future LAN support, not a procedure
+that can be completed today. It is retained so the security bar is explicit.
+Nothing here is enforced by the generator; treat it as unimplemented work.
 
 1. **Authentication required**
    - Put a reverse proxy in front of the model API (for example Caddy/Nginx/Traefik).

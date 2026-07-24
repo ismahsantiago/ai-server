@@ -13,23 +13,18 @@
 
 ## Access model
 
-{% if access == "lan" %}
-LAN access is enabled. Non-negotiable controls:
-
-1. **Authentication**: static bearer token (`API_BEARER_TOKEN` in `.env`).
-   Requests without a valid `Authorization: Bearer` header are rejected.
-2. **Allowlist**: only the source ranges in `LAN_ALLOWLIST`
-   (`{{ lan_allowlist }}`) may reach the serving port; deny everything else at
-   the firewall.
-3. **Token handling**: keep tokens out of version control, rotate on
-   personnel/device changes.
-4. **Auditability**: keep access logs in `logs/` with timestamp and source IP.
-{% else %}
 Localhost-only access. The stack binds to `127.0.0.1:{{ host_port }}` and is not
-reachable from the LAN. To expose it on the LAN, regenerate with
-`--access lan --auth bearer-token --lan-allowlist <cidr>`; the generator refuses
-LAN output without both controls.
-{% endif %}
+reachable from the LAN. LAN generation is fail-closed because this repository
+does not yet provide an authenticated TLS gateway, enforce a client allowlist,
+or mechanically prove either control. Do not change the bind to `0.0.0.0` or
+publish/forward this port. Treat LAN enablement as pending security engineering
+work, not as a manual runbook exception.
+
+The container runs as the explicit non-root UID/GID `65532:65532`, drops all
+capabilities, uses `no-new-privileges`, a read-only root filesystem, bounded
+PIDs/resources, and only a read-only model bind. Compatibility of that UID/GID
+with the selected image still requires runtime validation before serving; the
+generator's structural validation does not claim daemon or image verification.
 
 ## Operations
 

@@ -13,6 +13,7 @@
     "scripts/start.sh",
     "scripts/validate.sh",
     "scripts/smoke.sh",
+    "scripts/stop.sh",
     "scripts/start_serving.sh",
     "scripts/smoke_benchmark.sh",
     "scripts/validate_host.sh"
