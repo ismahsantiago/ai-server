@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROFILE_ORDER = ["medium-fast", "medium", "good"]
 

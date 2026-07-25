@@ -20,14 +20,22 @@ python3 -m ai_server_generator wizard \
 It will generate + validate into `generated/<preset>-<profile>-localhost/`
 and leave you with `scripts/start.sh` and `scripts/smoke.sh`.
 
+The wizard checks for the model under repository-root `models/`, while the
+current generated Compose file mounts a workspace-local `models/` directory.
+Before starting, copy the selected file into that generated directory as shown
+below. This limitation is tracked for engineering remediation.
+
 From repository root:
 
 ```bash
 python3 -m pip install -r requirements.txt
 python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access localhost
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost --force
+python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost
 python3 -m ai_server_generator validate generated/ornith-medium-localhost
-./generated/ornith-medium-localhost/scripts/start.sh
+mkdir -p generated/ornith-medium-localhost/models
+cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
+cd generated/ornith-medium-localhost
+./scripts/start.sh
 ```
 
 Test the endpoint:
@@ -41,6 +49,9 @@ curl -sS -X POST "http://127.0.0.1:${HOST_PORT:-8000}/v1/chat/completions" \
 ## 2) Preset matrix preview
 
 Use matrix before generation to confirm GO/NO-GO and resolved inputs.
+
+`GO` is a static compatibility decision. It does not verify model-file
+availability, Docker/runtime health, measured memory fit, latency, or quality.
 
 List available model presets:
 
@@ -67,11 +78,14 @@ If required LAN controls are missing, matrix returns `Decision: NO-GO`.
 Use this as your standard operating path:
 
 ```bash
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost --force
+python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost
 python3 -m ai_server_generator validate generated/ornith-medium-localhost
-./generated/ornith-medium-localhost/scripts/validate.sh
-./generated/ornith-medium-localhost/scripts/start.sh
-./generated/ornith-medium-localhost/scripts/smoke.sh
+mkdir -p generated/ornith-medium-localhost/models
+cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
+cd generated/ornith-medium-localhost
+./scripts/validate.sh
+./scripts/start.sh
+./scripts/smoke.sh
 ```
 
 Health check:
@@ -87,12 +101,13 @@ LAN mode requires both auth and allowlist controls.
 
 ```bash
 python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24 --out generated/ornith-medium-lan --force
+python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24 --out generated/ornith-medium-lan
 python3 -m ai_server_generator validate generated/ornith-medium-lan
 ```
 
-Then review and enforce security steps in `docs/lan-safe-runbook.md` before
-starting LAN-exposed services.
+The generator records the allowlist but does not currently enforce it. Review
+and enforce `docs/lan-safe-runbook.md` firewall/auth steps before starting a
+LAN-exposed service. Generation success is not authorization to expose it.
 
 ## 5) Troubleshooting quick checks
 
@@ -111,8 +126,8 @@ Common failure patterns:
 - `ERROR: unknown profile/setup`: check `list profiles` / `list setups` names.
 - `Decision: NO-GO` for LAN: provide both `--auth bearer-token` and
   `--lan-allowlist`.
-- Validation errors for missing files: regenerate with `--force` into the same
-  output directory.
+- Validation errors for missing files: generate into a new output directory.
+  `--force` recursively deletes the existing generated output.
 - No health response: check Docker status and generated compose service logs.
 
 ## 6) How to know if we are going well

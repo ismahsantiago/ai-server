@@ -40,6 +40,10 @@ python3 -m ai_server_generator matrix \
 
 If LAN requirements are missing, the command returns `Decision: NO-GO`.
 
+`Decision: GO` means only that the requested values pass static generator
+guardrails. It does not verify that model weights exist, that Docker starts,
+or that the model meets the stated memory, latency, or quality guidance.
+
 ## Generate with shorthand preset mode
 
 `--preset` can coexist with explicit options. Explicit flags override preset defaults.
@@ -49,8 +53,11 @@ python3 -m ai_server_generator generate \
   --preset ornith-9b \
   --profile medium \
   --access localhost \
-  --out generated/ornith-medium-localhost --force
+  --out generated/ornith-medium-localhost
 ```
+
+Generate into a new directory by default. `--force` deletes an existing
+generated directory and is not part of the recommended onboarding path.
 
 Generated workspace includes concise helpers:
 

@@ -23,6 +23,8 @@ using generator output as the canonical runtime path.
      --access localhost
    ```
 
+   A matrix `GO` is a static generator decision, not measured runtime support.
+
 2. Generate a runnable workspace:
 
    ```bash
@@ -30,8 +32,7 @@ using generator output as the canonical runtime path.
      --preset ornith-9b \
      --profile medium \
      --access localhost \
-     --out generated/ornith-medium-localhost \
-     --force
+     --out generated/ornith-medium-localhost
    ```
 
 3. Validate generated artifacts:
@@ -43,8 +44,14 @@ using generator output as the canonical runtime path.
 4. Start serving:
 
    ```bash
-   ./generated/ornith-medium-localhost/scripts/start.sh
+   mkdir -p generated/ornith-medium-localhost/models
+   cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
+   cd generated/ornith-medium-localhost
+   ./scripts/start.sh
    ```
+
+The workspace-local copy is required by the current Compose mount. Static
+validation does not start Docker or prove memory/latency/quality.
 
 5. Health check:
 
