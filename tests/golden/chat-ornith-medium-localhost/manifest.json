@@ -10,7 +10,13 @@
   "memory_guidance": "Recommended: 7-9 GB RAM budget for stable local serving.",
   "model_contract": {
     "architecture": "unknown-9b-family",
-    "contract_version": 1,
+    "artifact_filename": null,
+    "artifact_repository": null,
+    "artifact_revision": null,
+    "artifact_sha256": null,
+    "artifact_size_bytes": null,
+    "chat_template": null,
+    "contract_version": 2,
     "default_context": 4096,
     "estimated_model_gb": 5.5,
     "kv_cache_gb_at_default_context": 1.0,
@@ -49,6 +55,17 @@
   "resolved_access": "localhost",
   "resolved_profile": "medium",
   "resolved_setup": "chat",
+  "runtime_contract": {
+    "compatibility_status": "static-template-only",
+    "contract_version": 1,
+    "flag_schema": "llama-server-cli-v1",
+    "image_digest": "sha256:{GENERATION_FINGERPRINT}",
+    "image_repository": "ghcr.io/ggml-org/llama.cpp",
+    "image_tag": "server",
+    "implementation": "llama.cpp server",
+    "runtime_revision": null,
+    "runtime_version": null
+  },
   "schema": "ai-server-generated-v1",
   "security_posture": {
     "allowlist_enforcement": "not-configured-localhost",

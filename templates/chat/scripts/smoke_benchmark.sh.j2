@@ -5,6 +5,11 @@ SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
 HOST_PORT="{{ host_port }}"
 ENDPOINT="http://127.0.0.1:${HOST_PORT}/v1/chat/completions"
+MODE="${1:-smoke}"
+case "${MODE}" in
+  smoke|regression) ;;
+  *) printf "Usage: %s [smoke|regression]\n" "$0" >&2; exit 2 ;;
+esac
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ai-server-smoke.XXXXXX")"
 trap 'rm -rf -- "${TMP_DIR}"' EXIT HUP INT TERM
 
@@ -36,7 +41,8 @@ request_once() {
     printf "Expected HTTP 200, received %s for sample %s.\n" "${status}" "${index}" >&2
     return 1
   fi
-  python3 - "${TMP_DIR}/response-${index}.json" <<'PY'
+  completion_tokens="$(
+    python3 - "${TMP_DIR}/response-${index}.json" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -49,18 +55,23 @@ except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, IndexError,
     raise SystemExit("response is not a valid chat-completion JSON object")
 if not isinstance(choices, list) or not isinstance(content, str) or not content.strip():
     raise SystemExit("response chat-completion content is empty or malformed")
+usage = value.get("usage", {})
+tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
+print(tokens if isinstance(tokens, int) and tokens > 0 else 0)
 PY
+  )"
   if [ "${index}" = "warmup" ]; then
     return 0
   fi
-  python3 - "${first}" "${total}" >>"${TMP_DIR}/samples.txt" <<'PY'
+  python3 - "${first}" "${total}" "${completion_tokens}" >>"${TMP_DIR}/samples.txt" <<'PY'
 import math
 import sys
 
-first, total = map(float, sys.argv[1:])
+first, total = map(float, sys.argv[1:3])
+tokens = int(sys.argv[3])
 if not all(math.isfinite(value) and value >= 0 for value in (first, total)):
     raise SystemExit("curl returned a non-numeric timing")
-print(f"{first * 1000:.3f} {total * 1000:.3f}")
+print(f"{first * 1000:.3f} {total * 1000:.3f} {tokens}")
 PY
 }
 
@@ -70,7 +81,7 @@ for sample in 1 2 3; do
   request_once "${sample}"
 done
 
-read -r TTFB_P50_MS TTFB_P95_MS TOTAL_P50_MS TOTAL_P95_MS < <(
+read -r TTFB_P50_MS TTFB_P95_MS TOTAL_P50_MS TOTAL_P95_MS TOKENS_PER_SECOND < <(
   python3 - "${TMP_DIR}/samples.txt" <<'PY'
 import math
 import sys
@@ -90,9 +101,11 @@ def percentile(values, fraction):
 
 first = [row[0] for row in rows]
 total = [row[1] for row in rows]
+token_rates = [row[2] / (row[1] / 1000) for row in rows if row[2] > 0 and row[1] > 0]
+token_rate = f"{percentile(token_rates, .50):.3f}" if len(token_rates) == len(rows) else "NOT_MEASURED"
 print(
     f"{percentile(first, .50):.3f} {percentile(first, .95):.3f} "
-    f"{percentile(total, .50):.3f} {percentile(total, .95):.3f}"
+    f"{percentile(total, .50):.3f} {percentile(total, .95):.3f} {token_rate}"
 )
 PY
 )
@@ -124,6 +137,20 @@ PY
   fi
 fi
 
+if [ "${MODE}" = "regression" ]; then
+  if [ "${TOKENS_PER_SECOND}" = "NOT_MEASURED" ] || [ "${MEMORY_MB}" = "NOT_MEASURED" ]; then
+    printf "Regression benchmark requires measured completion tokens and container memory.\n" >&2
+    exit 1
+  fi
+fi
+
+HOST_KERNEL="$(uname -sr 2>/dev/null || printf 'NOT_MEASURED')"
+HOST_ARCH="$(uname -m 2>/dev/null || printf 'NOT_MEASURED')"
+HOST_CPU_COUNT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || printf 'NOT_MEASURED')"
+GENERATED_TOKENS="$(
+  awk '{ total += $3 } END { print total + 0 }' "${TMP_DIR}/samples.txt"
+)"
+
 TS="$(date -u +%Y%m%d-%H%M%S)"
 OUT_DIR="${WORKSPACE}/logs/benchmarks"
 mkdir -p "${OUT_DIR}"
@@ -132,12 +159,28 @@ cat >"${OUT}" <<EOF
 # Smoke Benchmark Evidence
 
 - Timestamp (UTC): ${TS}
+- Evidence mode: ${MODE}
 - Validation: HTTP transport + status + chat-completion JSON content
 - Authentication: none (localhost-only endpoint)
 - Samples: 1 warm-up + 3 measured
 - Profile: {{ profile }}
 - Model host path: {{ host_model_path }}
 - Model container path: {{ container_model_path }}
+- Model SHA-256: {{ model_contract.artifact_sha256 or "NOT_VERIFIED" }}
+- Runtime implementation: {{ runtime_contract.implementation }}
+- Runtime version: {{ runtime_contract.runtime_version or "NOT_VERIFIED" }}
+- Runtime revision: {{ runtime_contract.runtime_revision or "NOT_VERIFIED" }}
+- Runtime flag schema: {{ runtime_contract.flag_schema }}
+- Runtime compatibility: {{ runtime_contract.compatibility_status }}
+- Serving image: {{ serving_image }}
+- Generation fingerprint: {{ generation_fingerprint }}
+- Host kernel: ${HOST_KERNEL}
+- Host architecture: ${HOST_ARCH}
+- Host logical CPUs: ${HOST_CPU_COUNT}
+- Workload: POST /v1/chat/completions; prompt="Respond with OK."; max_tokens=8
+- Effective config: ctx_size={{ ctx_size }}, batch_size={{ batch_size }}, threads={{ threads }}, n_predict={{ n_predict }}
+- Concurrency: 1
+- Generated completion tokens: ${GENERATED_TOKENS}
 
 | Metric | Value |
 |---|---:|
@@ -147,7 +190,7 @@ cat >"${OUT}" <<EOF
 | Total latency p50 ms | ${TOTAL_P50_MS} |
 | Total latency p95 ms | ${TOTAL_P95_MS} |
 | Container memory MB | ${MEMORY_MB} |
-| Tokens per second | NOT_MEASURED |
+| Tokens per second p50 | ${TOKENS_PER_SECOND} |
 | Response quality | NOT_MEASURED |
 EOF
 

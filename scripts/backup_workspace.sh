@@ -38,6 +38,15 @@ if [ ! -f "${WORKSPACE}/manifest.json" ]; then
   printf "This does not look like a generated ai-server workspace.\n" >&2
   exit 1
 fi
+if [ ! -f "${WORKSPACE}/.env" ] || [ -L "${WORKSPACE}/.env" ]; then
+  printf "Refusing to back up a workspace without a regular .env file.\n" >&2
+  exit 1
+fi
+ENV_MODE="$(stat -f '%Lp' "${WORKSPACE}/.env" 2>/dev/null || stat -c '%a' "${WORKSPACE}/.env")"
+if [ "${ENV_MODE}" != "600" ]; then
+  printf "Refusing to back up .env with unsafe mode %s; expected 600.\n" "${ENV_MODE}" >&2
+  exit 1
+fi
 
 mkdir -p -- "${DESTINATION}"
 DESTINATION="$(CDPATH='' cd -- "${DESTINATION}" && pwd)"
@@ -50,9 +59,56 @@ if [ -e "${ARCHIVE}" ]; then
   exit 1
 fi
 
-# Archive from the parent so the workspace name is the single root entry, which
-# keeps restore unambiguous.
-tar -czf "${ARCHIVE}" -C "$(dirname -- "${WORKSPACE}")" "${WORKSPACE_NAME}"
+# Backup and restore share the manifest inventory contract. Mutable runtime
+# output (for example logs/benchmarks) is intentionally excluded.
+INVENTORY="$(mktemp "${DESTINATION}/.${WORKSPACE_NAME}.inventory.XXXXXX")"
+cleanup() {
+  rm -f -- "${INVENTORY}"
+}
+trap cleanup EXIT HUP INT TERM
+
+WORKSPACE="${WORKSPACE}" WORKSPACE_NAME="${WORKSPACE_NAME}" \
+  INVENTORY="${INVENTORY}" python3 - <<'PY'
+import json
+import os
+from pathlib import Path, PurePosixPath
+
+workspace = Path(os.environ["WORKSPACE"])
+manifest = json.loads((workspace / "manifest.json").read_text(encoding="utf-8"))
+required = manifest.get("required_files")
+if not isinstance(required, list) or not required or any(
+    not isinstance(item, str) or not item for item in required
+):
+    raise SystemExit("Manifest required_files must be a non-empty string array.")
+
+entries = set(required)
+entries.add(".ai-server-generated.json")
+encoded = []
+for relative_name in sorted(entries):
+    relative = PurePosixPath(relative_name)
+    if (
+        relative.is_absolute()
+        or not relative.parts
+        or any(part in {"", ".", ".."} for part in relative.parts)
+    ):
+        raise SystemExit(f"Unsafe manifest inventory path: {relative_name}")
+    candidate = workspace.joinpath(*relative.parts)
+    try:
+        candidate.resolve(strict=True).relative_to(workspace)
+    except (FileNotFoundError, ValueError) as exc:
+        raise SystemExit(f"Missing or escaping inventory file: {relative_name}") from exc
+    if candidate.is_symlink() or not candidate.is_file():
+        raise SystemExit(f"Inventory entry is not a regular file: {relative_name}")
+    archived_name = f"{os.environ['WORKSPACE_NAME']}/{relative.as_posix()}"
+    encoded.append(os.fsencode(archived_name))
+
+Path(os.environ["INVENTORY"]).write_bytes(b"\0".join(encoded) + b"\0")
+PY
+
+# Archive only the validated NUL-delimited inventory. COPYFILE_DISABLE avoids
+# macOS AppleDouble metadata members, which are outside the manifest contract.
+COPYFILE_DISABLE=1 tar -czf "${ARCHIVE}" -C "$(dirname -- "${WORKSPACE}")" \
+  --null -T "${INVENTORY}"
 
 if command -v shasum >/dev/null 2>&1; then
   ( cd -- "${DESTINATION}" && shasum -a 256 "$(basename -- "${ARCHIVE}")" >"${ARCHIVE}.sha256" )

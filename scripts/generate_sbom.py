@@ -28,7 +28,7 @@ from ai_server_generator.render import (  # noqa: E402
 )
 
 SBOM_PATH = PROJECT_ROOT / "sbom.json"
-REQUIREMENT_FILES = ("requirements.txt", "requirements-dev.txt")
+REQUIREMENT_FILES = ("requirements.lock",)
 PIN_PATTERN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)==([A-Za-z0-9][A-Za-z0-9.+!-]*)$")
 
 
@@ -42,11 +42,10 @@ def _read_pinned_requirements() -> dict[str, str]:
         for line_number, raw_line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1
         ):
-            line = raw_line.split("#", 1)[0].strip()
-            if not line or line.startswith("-"):
-                # ``-r requirements.txt`` style includes are followed separately
-                # because every referenced file is already in REQUIREMENT_FILES.
+            line = raw_line.split("#", 1)[0].strip().removesuffix("\\").strip()
+            if not line or line.startswith("--hash="):
                 continue
+            line = line.split(" ; ", 1)[0].strip()
             match = PIN_PATTERN.match(line)
             if match is None:
                 raise SystemExit(

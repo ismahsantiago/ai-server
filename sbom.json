@@ -2,11 +2,67 @@
   "bomFormat": "CycloneDX",
   "components": [
     {
+      "name": "boolean-py",
+      "purl": "pkg:pypi/boolean-py@5.0",
+      "scope": "required",
+      "type": "library",
+      "version": "5.0"
+    },
+    {
+      "name": "cachecontrol",
+      "purl": "pkg:pypi/cachecontrol@0.14.4",
+      "scope": "required",
+      "type": "library",
+      "version": "0.14.4"
+    },
+    {
+      "name": "certifi",
+      "purl": "pkg:pypi/certifi@2026.7.22",
+      "scope": "required",
+      "type": "library",
+      "version": "2026.7.22"
+    },
+    {
+      "name": "charset-normalizer",
+      "purl": "pkg:pypi/charset-normalizer@3.4.9",
+      "scope": "required",
+      "type": "library",
+      "version": "3.4.9"
+    },
+    {
       "name": "coverage",
       "purl": "pkg:pypi/coverage@7.10.7",
       "scope": "required",
       "type": "library",
       "version": "7.10.7"
+    },
+    {
+      "name": "cyclonedx-python-lib",
+      "purl": "pkg:pypi/cyclonedx-python-lib@9.1.0",
+      "scope": "required",
+      "type": "library",
+      "version": "9.1.0"
+    },
+    {
+      "name": "defusedxml",
+      "purl": "pkg:pypi/defusedxml@0.7.1",
+      "scope": "required",
+      "type": "library",
+      "version": "0.7.1"
+    },
+    {
+      "name": "filelock",
+      "purl": "pkg:pypi/filelock@3.32.0",
+      "scope": "required",
+      "type": "library",
+      "version": "3.32.0"
+    },
+    {
+      "name": "idna",
+      "purl": "pkg:pypi/idna@3.18",
+      "scope": "required",
+      "type": "library",
+      "version": "3.18"
     },
     {
       "name": "jinja2",
@@ -16,11 +72,39 @@
       "version": "3.1.6"
     },
     {
+      "name": "license-expression",
+      "purl": "pkg:pypi/license-expression@30.4.4",
+      "scope": "required",
+      "type": "library",
+      "version": "30.4.4"
+    },
+    {
+      "name": "markdown-it-py",
+      "purl": "pkg:pypi/markdown-it-py@4.2.0",
+      "scope": "required",
+      "type": "library",
+      "version": "4.2.0"
+    },
+    {
       "name": "markupsafe",
       "purl": "pkg:pypi/markupsafe@3.0.3",
       "scope": "required",
       "type": "library",
       "version": "3.0.3"
+    },
+    {
+      "name": "mdurl",
+      "purl": "pkg:pypi/mdurl@0.1.2",
+      "scope": "required",
+      "type": "library",
+      "version": "0.1.2"
+    },
+    {
+      "name": "msgpack",
+      "purl": "pkg:pypi/msgpack@1.2.1",
+      "scope": "required",
+      "type": "library",
+      "version": "1.2.1"
     },
     {
       "name": "mypy",
@@ -30,11 +114,46 @@
       "version": "1.18.2"
     },
     {
+      "name": "mypy-extensions",
+      "purl": "pkg:pypi/mypy-extensions@1.1.0",
+      "scope": "required",
+      "type": "library",
+      "version": "1.1.0"
+    },
+    {
+      "name": "packageurl-python",
+      "purl": "pkg:pypi/packageurl-python@0.17.6",
+      "scope": "required",
+      "type": "library",
+      "version": "0.17.6"
+    },
+    {
       "name": "packaging",
       "purl": "pkg:pypi/packaging@24.0",
       "scope": "required",
       "type": "library",
       "version": "24.0"
+    },
+    {
+      "name": "pathspec",
+      "purl": "pkg:pypi/pathspec@1.1.1",
+      "scope": "required",
+      "type": "library",
+      "version": "1.1.1"
+    },
+    {
+      "name": "pip",
+      "purl": "pkg:pypi/pip@26.1.2",
+      "scope": "required",
+      "type": "library",
+      "version": "26.1.2"
+    },
+    {
+      "name": "pip-api",
+      "purl": "pkg:pypi/pip-api@0.0.34",
+      "scope": "required",
+      "type": "library",
+      "version": "0.0.34"
     },
     {
       "name": "pip-audit",
@@ -44,6 +163,55 @@
       "version": "2.9.0"
     },
     {
+      "name": "pip-requirements-parser",
+      "purl": "pkg:pypi/pip-requirements-parser@32.0.1",
+      "scope": "required",
+      "type": "library",
+      "version": "32.0.1"
+    },
+    {
+      "name": "platformdirs",
+      "purl": "pkg:pypi/platformdirs@4.11.0",
+      "scope": "required",
+      "type": "library",
+      "version": "4.11.0"
+    },
+    {
+      "name": "py-serializable",
+      "purl": "pkg:pypi/py-serializable@2.1.0",
+      "scope": "required",
+      "type": "library",
+      "version": "2.1.0"
+    },
+    {
+      "name": "pygments",
+      "purl": "pkg:pypi/pygments@2.20.0",
+      "scope": "required",
+      "type": "library",
+      "version": "2.20.0"
+    },
+    {
+      "name": "pyparsing",
+      "purl": "pkg:pypi/pyparsing@3.3.2",
+      "scope": "required",
+      "type": "library",
+      "version": "3.3.2"
+    },
+    {
+      "name": "requests",
+      "purl": "pkg:pypi/requests@2.34.2",
+      "scope": "required",
+      "type": "library",
+      "version": "2.34.2"
+    },
+    {
+      "name": "rich",
+      "purl": "pkg:pypi/rich@15.0.0",
+      "scope": "required",
+      "type": "library",
+      "version": "15.0.0"
+    },
+    {
       "name": "ruff",
       "purl": "pkg:pypi/ruff@0.13.2",
       "scope": "required",
@@ -51,11 +219,39 @@
       "version": "0.13.2"
     },
     {
-      "name": "setuptools",
-      "purl": "pkg:pypi/setuptools@81.0.0",
+      "name": "sortedcontainers",
+      "purl": "pkg:pypi/sortedcontainers@2.4.0",
       "scope": "required",
       "type": "library",
-      "version": "81.0.0"
+      "version": "2.4.0"
+    },
+    {
+      "name": "toml",
+      "purl": "pkg:pypi/toml@0.10.2",
+      "scope": "required",
+      "type": "library",
+      "version": "0.10.2"
+    },
+    {
+      "name": "tomli",
+      "purl": "pkg:pypi/tomli@2.4.1",
+      "scope": "required",
+      "type": "library",
+      "version": "2.4.1"
+    },
+    {
+      "name": "typing-extensions",
+      "purl": "pkg:pypi/typing-extensions@4.16.0",
+      "scope": "required",
+      "type": "library",
+      "version": "4.16.0"
+    },
+    {
+      "name": "urllib3",
+      "purl": "pkg:pypi/urllib3@2.7.0",
+      "scope": "required",
+      "type": "library",
+      "version": "2.7.0"
     },
     {
       "externalReferences": [

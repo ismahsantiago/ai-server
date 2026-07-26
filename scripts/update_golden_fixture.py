@@ -75,6 +75,12 @@ def _render_normalized() -> dict[str, str]:
             model_contract={
                 "contract_version": preset.contract_version,
                 "metadata_status": preset.metadata_status,
+                "artifact_repository": preset.artifact_repository,
+                "artifact_revision": preset.artifact_revision,
+                "artifact_filename": preset.artifact_filename,
+                "artifact_size_bytes": preset.artifact_size_bytes,
+                "artifact_sha256": preset.artifact_sha256,
+                "chat_template": preset.chat_template,
                 "architecture": preset.architecture,
                 "parameter_billions": preset.parameter_billions,
                 "quantization_assumption": preset.quantization_assumption,

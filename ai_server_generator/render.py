@@ -16,6 +16,8 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from .data import PROJECT_ROOT, load_profiles, load_setups, templates_dir
 
+MODELS_ROOT = (PROJECT_ROOT / "models").resolve()
+
 TEMPLATE_MAP = {
     "docker-compose.yml": "docker-compose.yml.j2",
     ".env": "env.j2",
@@ -53,6 +55,17 @@ SERVING_IMAGE_DIGEST = (
     "sha256:4f02c560799a1569be08b0183d52b94b0d4a6e4b88f52f20562d2334c73837d4"
 )
 SERVING_IMAGE = f"{SERVING_IMAGE_REPOSITORY}:{SERVING_IMAGE_TAG}@{SERVING_IMAGE_DIGEST}"
+RUNTIME_CONTRACT = {
+    "contract_version": 1,
+    "implementation": "llama.cpp server",
+    "image_repository": SERVING_IMAGE_REPOSITORY,
+    "image_tag": SERVING_IMAGE_TAG,
+    "image_digest": SERVING_IMAGE_DIGEST,
+    "runtime_version": None,
+    "runtime_revision": None,
+    "flag_schema": "llama-server-cli-v1",
+    "compatibility_status": "static-template-only",
+}
 
 OWNERSHIP_FILE = ".ai-server-generated.json"
 OWNERSHIP_SCHEMA = "ai-server-workspace-owner-v1"
@@ -125,8 +138,18 @@ def _validate_text(name: str, value: str, *, allow_empty: bool = False) -> str:
 
 def _validate_model_path(model_path: str) -> str:
     value = _validate_text("model path", model_path)
-    if any(part == ".." for part in Path(value).parts):
-        raise ValueError("model path must not contain parent traversal")
+    candidate = Path(value).expanduser()
+    if not candidate.is_absolute():
+        candidate = PROJECT_ROOT / candidate
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(MODELS_ROOT)
+    except ValueError as exc:
+        raise ValueError("model path must resolve inside the repository models/ root") from exc
+    if resolved == MODELS_ROOT:
+        raise ValueError("model path must resolve to a file below the repository models/ root")
+    if resolved.exists() and not resolved.is_file():
+        raise ValueError("model path must resolve to a regular file")
     return value
 
 
@@ -192,6 +215,7 @@ def _manifest_object(context: dict[str, Any]) -> dict[str, Any]:
         "container_model_path": context["container_model_path"],
         "model_contract": context["model_contract"],
         "serving_image": context["serving_image"],
+        "runtime_contract": context["runtime_contract"],
         "preset_alias": context["preset_alias"],
         "preset_name": context["preset_name"],
         "preset_summary": context["preset_summary"],
@@ -284,8 +308,14 @@ def build_context(
             "host_model_path": _host_model_path(model_path),
             "container_model_path": "/models/model.gguf",
             "model_contract": model_contract or {
-                "contract_version": 1,
+                "contract_version": 2,
                 "metadata_status": "custom-artifact-unverified",
+                "artifact_repository": None,
+                "artifact_revision": None,
+                "artifact_filename": Path(model_path).name,
+                "artifact_size_bytes": None,
+                "artifact_sha256": None,
+                "chat_template": None,
                 "architecture": "unknown",
                 "parameter_billions": None,
                 "quantization_assumption": "unknown",
@@ -297,6 +327,7 @@ def build_context(
                 "default_context": None,
             },
             "serving_image": SERVING_IMAGE,
+            "runtime_contract": dict(RUNTIME_CONTRACT),
             "auth": "none",
             "lan_allowlist": "",
             "security_posture": dict(LOCALHOST_SECURITY_POSTURE),

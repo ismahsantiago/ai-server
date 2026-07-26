@@ -1,9 +1,12 @@
+import hashlib
+import io
 import json
 import os
 import shutil
 import stat
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -82,7 +85,7 @@ class CliTests(unittest.TestCase):
         self.models_dir = ROOT / "models"
         self.models_dir.mkdir(parents=True, exist_ok=True)
         (self.models_dir / "ornith-9b.gguf").write_text("dummy", encoding="utf-8")
-        self.spaced_model = self.models_dir / "test model with spaces.gguf"
+        self.spaced_model = self.models_dir / f"test model with spaces{suffix}.gguf"
         self.spaced_model.write_text("tiny fixture", encoding="utf-8")
 
     def tearDown(self):
@@ -169,7 +172,15 @@ class CliTests(unittest.TestCase):
         self.assertEqual(manifest["resolved_access"], "localhost")
         self.assertEqual(manifest["host_model_path"], str((ROOT / "models/ornith-9b.gguf").resolve()))
         self.assertEqual(manifest["container_model_path"], "/models/model.gguf")
-        self.assertEqual(manifest["model_contract"]["contract_version"], 1)
+        self.assertEqual(manifest["model_contract"]["contract_version"], 2)
+        self.assertEqual(
+            manifest["model_contract"]["metadata_status"], "planning-assumption-only"
+        )
+        self.assertIsNone(manifest["model_contract"]["artifact_sha256"])
+        self.assertEqual(
+            manifest["runtime_contract"]["compatibility_status"], "static-template-only"
+        )
+        self.assertEqual(manifest["runtime_contract"]["flag_schema"], "llama-server-cli-v1")
 
     def test_matrix_covers_all_presets_for_medium_and_medium_fast_localhost(self):
         aliases = [
@@ -739,6 +750,118 @@ class CliTests(unittest.TestCase):
         self.assertIn("${COMPOSE_VALUE}", dotenv)
         self.assertIn("\\'", dotenv)
 
+    def test_model_path_is_confined_to_repository_models_root(self):
+        outside = ROOT.parent / f"outside-model-{os.getpid()}.gguf"
+        escaping_link = self.models_dir / f"escaping-link-{os.getpid()}.gguf"
+        outside.write_text("outside", encoding="utf-8")
+        escaping_link.symlink_to(outside)
+        try:
+            cases = [
+                (str(outside), "models/ root"),
+                ("./models/../outside-model.gguf", "models/ root"),
+                (str(escaping_link), "models/ root"),
+            ]
+            for model_path, expected in cases:
+                with self.subTest(model_path=model_path):
+                    with self.assertRaisesRegex(ValueError, expected):
+                        build_context(
+                            setup_name="chat",
+                            profile_name="medium",
+                            access="localhost",
+                            model_path=model_path,
+                            auth="none",
+                            lan_allowlist="",
+                        )
+
+            absolute_in_root = self.models_dir / "ornith-9b.gguf"
+            context = build_context(
+                setup_name="chat",
+                profile_name="medium",
+                access="localhost",
+                model_path=str(absolute_in_root),
+                auth="none",
+                lan_allowlist="",
+            )
+            self.assertEqual(context["host_model_path"], str(absolute_in_root.resolve()))
+
+            special = build_context(
+                setup_name="chat",
+                profile_name="medium",
+                access="localhost",
+                model_path="./models/model \"quote' : # ${COMPOSE_VALUE} ü.gguf",
+                auth="none",
+                lan_allowlist="",
+            )
+            self.assertIn("${COMPOSE_VALUE}", special["host_model_path"])
+
+            self.run_cli(
+                "generate",
+                "--setup",
+                "chat",
+                "--profile",
+                "medium",
+                "--access",
+                "localhost",
+                "--model-path",
+                "./models/placeholder.gguf",
+                "--out",
+                str(self.localhost_out.relative_to(ROOT)),
+                check=True,
+            )
+            manifest_path = self.localhost_out / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["model_path"] = str(outside)
+            manifest["host_model_path"] = str(outside)
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            validation = self.run_cli(
+                "validate", str(self.localhost_out.relative_to(ROOT)), "--tier", "structure"
+            )
+            self.assertNotEqual(validation.returncode, 0)
+            self.assertIn("must resolve inside the repository models/ root", validation.stderr)
+        finally:
+            escaping_link.unlink(missing_ok=True)
+            outside.unlink(missing_ok=True)
+
+    def test_accepts_in_root_normalized_model_path(self):
+        subdir = self.models_dir / f"normalized-subdir-{os.getpid()}"
+        model = self.models_dir / f"normalized-model-{os.getpid()}.gguf"
+        subdir.mkdir()
+        model.write_text("dummy", encoding="utf-8")
+        try:
+            model_path = f"./models/{subdir.name}/../{model.name}"
+            context = build_context(
+                setup_name="chat",
+                profile_name="medium",
+                access="localhost",
+                model_path=model_path,
+                auth="none",
+                lan_allowlist="",
+            )
+            self.assertEqual(context["host_model_path"], str(model.resolve()))
+
+            generated = self.run_cli(
+                "generate",
+                "--setup",
+                "chat",
+                "--profile",
+                "medium",
+                "--access",
+                "localhost",
+                "--model-path",
+                model_path,
+                "--out",
+                str(self.localhost_out.relative_to(ROOT)),
+                check=True,
+            )
+            self.assertEqual(generated.returncode, 0)
+            validation = self.run_cli(
+                "validate", str(self.localhost_out.relative_to(ROOT)), "--tier", "structure"
+            )
+            self.assertEqual(validation.returncode, 0, validation.stderr)
+        finally:
+            model.unlink(missing_ok=True)
+            subdir.rmdir()
+
     def test_rejects_control_characters_and_invalid_cidr_before_render(self):
         bad_model = self.run_cli(
             "generate",
@@ -942,6 +1065,10 @@ if [ "${1:-}" = "stats" ]; then
   printf '128MiB / 8GiB\\n'
   exit 0
 fi
+if [ "${1:-}" = "inspect" ]; then
+  printf '%s\\n' "${FAKE_CONTAINER_HEALTH:-starting}"
+  exit 0
+fi
 case "$*" in
   "compose version") printf 'Docker Compose fake\\n'; exit 0 ;;
   *" config --format json")
@@ -993,7 +1120,9 @@ for argument in "$@"; do
 done
 [ -n "$out" ] || exit 2
 case "${FAKE_RESPONSE:-ok}" in
-  ok) printf '{"choices":[{"message":{"content":"OK"}}]}' >"$out"
+  ok) printf '{"choices":[{"message":{"content":"OK"}}],"usage":{"completion_tokens":4}}' >"$out"
+      printf '200 0.010 0.020' ;;
+  no_usage) printf '{"choices":[{"message":{"content":"OK"}}]}' >"$out"
       printf '200 0.010 0.020' ;;
   malformed) printf '{"unexpected":true}' >"$out"
       printf '200 0.010 0.020' ;;
@@ -1014,6 +1143,7 @@ esac
             "FAKE_MODEL_PATH": str(self.spaced_model.resolve()),
             "FAKE_SERVING_IMAGE": SERVING_IMAGE,
             "FAKE_HEALTH": health,
+            "FAKE_CONTAINER_HEALTH": "starting",
             "FAKE_RESPONSE": response,
         }, log
 
@@ -1102,6 +1232,10 @@ esac
                             "--out",
                             str(self.runtime_out.relative_to(ROOT)),
                         )
+                        if model_path == self.models_dir:
+                            self.assertNotEqual(generated.returncode, 0)
+                            self.assertIn("models/ root", generated.stderr)
+                            continue
                         self.assertEqual(generated.returncode, 0, generated.stderr)
                         env["FAKE_MODEL_PATH"] = str(model_path.resolve())
                         host = self.run_cli(
@@ -1282,13 +1416,19 @@ esac
             del m["model_contract"]["architecture"]
 
         def bad_contract_version(m):
-            m["model_contract"]["contract_version"] = 2
+            m["model_contract"]["contract_version"] = 1
 
         def bad_metadata_status(m):
             m["model_contract"]["metadata_status"] = "verified-somehow"
 
         def contract_not_object(m):
             m["model_contract"] = "not-an-object"
+
+        def missing_runtime_contract_key(m):
+            del m["runtime_contract"]["flag_schema"]
+
+        def runtime_image_mismatch(m):
+            m["runtime_contract"]["image_digest"] = "sha256:" + ("0" * 64)
 
         def missing_required_file(m):
             m["required_files"] = m["required_files"] + ["scripts/ghost.sh"]
@@ -1313,9 +1453,11 @@ esac
             (bad_posture_value, "security_posture.exposure must be localhost-only"),
             (extra_posture_claim, "security_posture contains unsupported claims"),
             (missing_contract_key, "model_contract missing keys: architecture"),
-            (bad_contract_version, "model_contract.contract_version must be 1"),
+            (bad_contract_version, "model_contract.contract_version must be 2"),
             (bad_metadata_status, "model_contract.metadata_status is unsupported"),
             (contract_not_object, "model_contract must be an object"),
+            (missing_runtime_contract_key, "runtime_contract missing keys: flag_schema"),
+            (runtime_image_mismatch, "runtime_contract image fields must match serving_image"),
             (quick_commands_not_object, "quick_commands must be an object"),
             (access_not_localhost, "only localhost generated workspaces are supported"),
             (auth_not_none, "localhost workspace auth must be none"),
@@ -1376,7 +1518,31 @@ esac
             )
             self.assertNotEqual(timeout.returncode, 0)
             self.assertIn("readiness timed out", timeout.stderr)
-            self.assertIn("logs --tail 80 llama-server", log.read_text(encoding="utf-8"))
+            runtime_log = log.read_text(encoding="utf-8")
+            self.assertIn("logs --tail 80 llama-server", runtime_log)
+            self.assertIn("down --timeout 30", runtime_log)
+
+            retry = subprocess.run(
+                [str(self.runtime_out / "scripts/start.sh")],
+                cwd=unrelated,
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+            self.assertNotEqual(retry.returncode, 0)
+
+            env["FAKE_CONTAINER_HEALTH"] = "unhealthy"
+            unhealthy = subprocess.run(
+                [str(self.runtime_out / "scripts/start.sh")],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+            self.assertNotEqual(unhealthy.returncode, 0)
+            self.assertIn("terminal state: unhealthy", unhealthy.stderr)
 
             stopped = subprocess.run(
                 [str(self.runtime_out / "scripts/stop.sh")],
@@ -1388,6 +1554,42 @@ esac
             )
             self.assertEqual(stopped.returncode, 0, stopped.stderr)
             self.assertIn("down --timeout 30", log.read_text(encoding="utf-8"))
+
+    def test_rendered_shell_scripts_pass_static_checks_with_complex_model_path(self):
+        model = self.models_dir / "model spaces \"quote' back\\slash ü.gguf"
+        model.write_text("fixture", encoding="utf-8")
+        try:
+            generated = self.run_cli(
+                "generate",
+                "--preset",
+                "ornith-9b",
+                "--model-path",
+                str(model),
+                "--out",
+                str(self.runtime_out.relative_to(ROOT)),
+            )
+            self.assertEqual(generated.returncode, 0, generated.stderr)
+            scripts = sorted((self.runtime_out / "scripts").glob("*.sh"))
+            self.assertTrue(scripts)
+            for script in scripts:
+                with self.subTest(script=script.name):
+                    syntax = subprocess.run(
+                        ["bash", "-n", str(script)],
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(syntax.returncode, 0, syntax.stderr)
+                    if shutil.which("shellcheck"):
+                        checked = subprocess.run(
+                            ["shellcheck", str(script)],
+                            text=True,
+                            capture_output=True,
+                            check=False,
+                        )
+                        self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+        finally:
+            model.unlink(missing_ok=True)
 
     def test_smoke_is_strict_and_emits_only_numeric_or_not_measured_evidence(self):
         self._generate_runtime_fixture()
@@ -1407,8 +1609,38 @@ esac
             report = report_path.read_text(encoding="utf-8")
             self.assertRegex(report, r"TTFB p50 ms \| [0-9]+\.[0-9]+")
             self.assertRegex(report, r"Container memory MB \| [0-9]+\.[0-9]+")
-            self.assertIn("Tokens per second | NOT_MEASURED", report)
+            self.assertRegex(report, r"Tokens per second p50 \| [0-9]+\.[0-9]+")
+            self.assertIn("Evidence mode: smoke", report)
+            self.assertIn("Runtime compatibility: static-template-only", report)
+            self.assertIn("Concurrency: 1", report)
             self.assertNotIn("placeholder", report.lower())
+
+            regression = subprocess.run(
+                [str(self.runtime_out / "scripts/smoke_benchmark.sh"), "regression"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+            self.assertEqual(regression.returncode, 0, regression.stderr)
+            regression_report = Path(
+                regression.stdout.strip().split("evidence: ", 1)[1]
+            ).read_text(encoding="utf-8")
+            self.assertIn("Evidence mode: regression", regression_report)
+            self.assertIn("Generated completion tokens: 12", regression_report)
+
+            env["FAKE_RESPONSE"] = "no_usage"
+            missing_measurement = subprocess.run(
+                [str(self.runtime_out / "scripts/smoke_benchmark.sh"), "regression"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+            self.assertNotEqual(missing_measurement.returncode, 0)
+            self.assertIn("requires measured completion tokens", missing_measurement.stderr)
 
             env["FAKE_RESPONSE"] = "malformed"
             malformed = subprocess.run(
@@ -1491,12 +1723,25 @@ esac
             str(self.ornith_out.relative_to(ROOT)),
             check=True,
         )
+        benchmark_log = self.ornith_out / "logs" / "benchmarks" / "smoke-benchmark.md"
+        benchmark_log.parent.mkdir(parents=True)
+        benchmark_log.write_text("normal mutable evidence", encoding="utf-8")
+        arbitrary_extra = self.ornith_out / "operator-scratch.txt"
+        arbitrary_extra.write_text("not part of the manifest", encoding="utf-8")
         with tempfile.TemporaryDirectory() as backup_root:
             self._run_script("backup_workspace.sh", str(self.ornith_out), backup_root)
             archives = list(Path(backup_root).glob("*.tar.gz"))
             self.assertEqual(len(archives), 1)
             archive = archives[0]
             self.assertTrue(archive.with_suffix(".gz.sha256").is_file())
+            with tarfile.open(archive, "r:gz") as bundle:
+                archived_names = {member.name for member in bundle.getmembers()}
+            self.assertFalse(
+                any(name.endswith("logs/benchmarks/smoke-benchmark.md") for name in archived_names)
+            )
+            self.assertFalse(
+                any(name.endswith("operator-scratch.txt") for name in archived_names)
+            )
 
             # A damaged workspace is fully recovered from the archive.
             (self.ornith_out / "README.md").write_text("corrupted", encoding="utf-8")
@@ -1504,6 +1749,12 @@ esac
             self.assertNotEqual(
                 (self.ornith_out / "README.md").read_text(encoding="utf-8"), "corrupted"
             )
+            self.assertEqual(
+                stat.S_IMODE((self.ornith_out / ".env").stat().st_mode),
+                0o600,
+            )
+            self.assertFalse(benchmark_log.exists())
+            self.assertFalse(arbitrary_extra.exists())
             self.run_cli("validate", str(self.ornith_out.relative_to(ROOT)), check=True)
 
             # A tampered archive must never reach the target directory.
@@ -1514,6 +1765,17 @@ esac
             )
             self.assertNotEqual(failed.returncode, 0)
             self.assertIn("Checksum verification failed", failed.stderr)
+
+            (self.ornith_out / ".env").chmod(0o644)
+            unsafe = self._run_script(
+                "backup_workspace.sh",
+                str(self.ornith_out),
+                backup_root,
+                check=False,
+            )
+            self.assertNotEqual(unsafe.returncode, 0)
+            self.assertIn("unsafe mode", unsafe.stderr)
+            (self.ornith_out / ".env").chmod(0o600)
 
         # --force regeneration leaves a recoverable copy that rollback restores.
         self.run_cli(
@@ -1532,6 +1794,60 @@ esac
         restored = json.loads((self.ornith_out / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(restored["preset_alias"], "ornith-9b")
         self.run_cli("validate", str(self.ornith_out.relative_to(ROOT)), check=True)
+
+    def test_restore_rejects_unsafe_or_unexpected_archive_members(self):
+        self.run_cli(
+            "generate",
+            "--preset",
+            "ornith-9b",
+            "--out",
+            str(self.ornith_out.relative_to(ROOT)),
+            check=True,
+        )
+        original_manifest = (self.ornith_out / "manifest.json").read_bytes()
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = root / "target"
+            target.mkdir()
+            (target / "sentinel").write_text("preserve", encoding="utf-8")
+
+            cases = ("parent", "absolute", "symlink", "unexpected")
+            for case in cases:
+                with self.subTest(case=case):
+                    archive = root / f"{case}.tar.gz"
+                    with tarfile.open(archive, "w:gz") as bundle:
+                        manifest_info = tarfile.TarInfo("workspace/manifest.json")
+                        manifest_info.size = len(original_manifest)
+                        bundle.addfile(manifest_info, io.BytesIO(original_manifest))
+                        if case == "parent":
+                            member = tarfile.TarInfo("workspace/../escape")
+                            member.size = 1
+                            bundle.addfile(member, io.BytesIO(b"x"))
+                        elif case == "absolute":
+                            member = tarfile.TarInfo("/absolute")
+                            member.size = 1
+                            bundle.addfile(member, io.BytesIO(b"x"))
+                        elif case == "symlink":
+                            member = tarfile.TarInfo("workspace/link")
+                            member.type = tarfile.SYMTYPE
+                            member.linkname = "../../outside"
+                            bundle.addfile(member)
+                        else:
+                            member = tarfile.TarInfo("workspace/unexpected.txt")
+                            member.size = 1
+                            bundle.addfile(member, io.BytesIO(b"x"))
+                    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+                    Path(f"{archive}.sha256").write_text(
+                        f"{digest}  {archive.name}\n", encoding="utf-8"
+                    )
+                    result = self._run_script(
+                        "restore_workspace.sh", str(archive), str(target), check=False
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(
+                        (target / "sentinel").read_text(encoding="utf-8"), "preserve"
+                    )
 
     def test_generated_output_matches_golden_fixture(self):
         result = subprocess.run(

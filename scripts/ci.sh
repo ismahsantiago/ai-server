@@ -138,12 +138,20 @@ else
   echo "PM Harness not present in this checkout; skipping harness gates."
 fi
 
-shasum -a 256 -c \
-  audits/audit_opencode_default_gpt-5_24-07-2026/pre-remediation.sha256
+# Audit evidence verification is deliberately opt-in. Normal CI must not read
+# a historical audit deliverable. A partial opt-in fails closed, and every
+# manifest entry is confined before shasum consumes it.
+if [ -n "${AUDIT_DIR:-}" ] || [ -n "${AUDIT_EVIDENCE_MANIFEST:-}" ]; then
+  python3 scripts/validate_audit_manifest.py
+  (
+    cd -- "${AUDIT_DIR}"
+    shasum -a 256 -c "$(basename -- "${AUDIT_EVIDENCE_MANIFEST}")"
+  )
+fi
 
 python3 -m pip_audit \
   --strict \
   --progress-spinner off \
   --format json \
   --output "${ARTIFACTS_DIR}/pip-audit.json" \
-  --requirement requirements.txt
+  --requirement requirements.lock

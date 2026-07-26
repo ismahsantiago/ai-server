@@ -23,12 +23,12 @@ fits the target hardware, or meets latency/quality goals.
 | requirement | source | delivery_task | expected_evidence | scope_class | acceptance |
 |---|---|---|---|---|---|
 | Linux is the initial host platform. | `.pm-harness/ceremonies/2026-07-23-kickoff-KICK-0001.md` lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0001, TASK-0002 | Linux prerequisites and generated Linux/Docker workspace | delivered | accepted-with-limitation: static artifacts exist; no target-host run is recorded |
-| Support localhost and LAN, with LAN opt-in. | kickoff lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0001, TASK-0003 | localhost default plus authenticated, allowlisted LAN operation | delivered | accepted-with-limitation: input guard exists; enforcement is pending TASK-0007 |
+| Support localhost and LAN, with LAN opt-in. | kickoff lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0001, TASK-0003 | localhost default plus authenticated, allowlisted LAN operation | delivered | accepted-with-limitation: localhost is delivered; LAN is safely refused until a separately approved TLS gateway and mechanically enforced allowlist exist |
 | Capability direction includes Vision, Coding, Chat, RAG, and other hardware-feasible uses. | kickoff lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0002 roadmap | distinct setup manifests, runbooks, and hardware evidence | roadmap | pending: only Chat is implemented |
 | Docker and simplifying tools are welcome. | kickoff lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0001, TASK-0003 | Docker-first generated workflow | delivered | accepted |
 | Balanced targets are medium-fast response, medium latency, and good quality. | kickoff lines 80-94; `mem-pm-orchestrator-0001.md` | TASK-0001, TASK-0004 | profiles plus measured latency/memory/quality evidence | delivered | accepted-with-limitation: profiles exist; outcomes are not measured |
-| Product is a downloadable generator-first repository. | `mem-pm-orchestrator-0004.md` and `mem-pm-orchestrator-0005.md` | TASK-0002, TASK-0003 | clone → matrix → generate → validate → start | delivered | accepted-with-limitation: generation works; launch-path defects are routed to TASK-0007 |
-| CLI is Python + Jinja2, command name `ai-server`, Chat/localhost/medium first, generated outputs ignored, bearer-token LAN MVP. | `mem-pm-orchestrator-0006.md` | TASK-0003 | package metadata, CLI, template output, guarded LAN flags | delivered | accepted-with-limitation: LAN allowlist is metadata, not enforced |
+| Product is a downloadable generator-first repository. | `mem-pm-orchestrator-0004.md` and `mem-pm-orchestrator-0005.md` | TASK-0002, TASK-0003 | clone → matrix → generate → validate → start | delivered | accepted-with-limitation: generation and bounded lifecycle helpers are covered by regression tests; real GGUF/Docker operation is not-run |
+| CLI is Python + Jinja2, command name `ai-server`, Chat/localhost/medium first, generated outputs ignored, bearer-token LAN MVP. | `mem-pm-orchestrator-0006.md` | TASK-0003 | package metadata, CLI, template output, guarded LAN flags | delivered | accepted-with-limitation: localhost is delivered; the proposed LAN MVP is not delivered and all LAN generation is fail-closed |
 
 ### TASK-0001 approved plan todos
 
@@ -36,9 +36,9 @@ fits the target hardware, or meets latency/quality goals.
 |---|---|---|---|---|---|
 | Create the lab directory skeleton. | `.pm-harness/plans/TASK-0001.plan.md` todo 1 | TASK-0001 | models/datasets/experiments/logs/backups/scripts/docs directories | delivered | accepted |
 | Define a Docker-first baseline with healthy service. | TASK-0001 todo 2 | TASK-0001 | service start and healthy status | delivered | accepted-with-limitation: Compose exists; live health was not run |
-| Expose an API-compatible endpoint with sample response. | TASK-0001 todo 3 | TASK-0001 | valid response payload | delivered | blocked: no live response evidence |
+| Expose an API-compatible endpoint with sample response. | TASK-0001 todo 3 | TASK-0001 | valid response payload | delivered | accepted-with-limitation: endpoint contract and fake-runtime regression exist; authorized real-GGUF response is not-run |
 | Implement a balanced resource preset. | TASK-0001 todo 4 | TASK-0001 | CPU/RAM/startup settings | delivered | accepted |
-| Store a smoke benchmark with latency and memory. | TASK-0001 todo 5 | TASK-0001 | measured timestamped report | delivered | contradicted: reports contain `placeholder` and `not-tested` |
+| Store a smoke benchmark with latency and memory. | TASK-0001 todo 5 | TASK-0001 | measured timestamped report | delivered | accepted-with-limitation: strict evidence schema exists and refuses incomplete regression evidence; real measurements are not-run |
 | Document LAN-safe enablement. | TASK-0001 todo 6 | TASK-0001 | localhost default, opt-in, auth, firewall notes | delivered | accepted-with-limitation: static runbook exists |
 | Align legacy artifacts to generator-first flow. | TASK-0001 todo 7 | TASK-0001 | canonical clone → matrix → generate → validate → start docs | delivered | accepted |
 | Label legacy files as compatibility examples. | TASK-0001 todo 8 | TASK-0001 | compatibility labels and generated equivalents | delivered | accepted |
@@ -75,7 +75,7 @@ fits the target hardware, or meets latency/quality goals.
 |---|---|---|---|---|---|
 | Add five named model presets with tags and memory guidance. | `.pm-harness/plans/TASK-0004.plan.md` todo 1 | TASK-0004 | preset catalog | delivered | accepted-with-limitation: guidance is not runtime evidence |
 | Add shorthand preset expansion. | TASK-0004 todo 2 | TASK-0004 | `--preset` resolution into manifest/runbook | delivered | accepted |
-| Add concise generated start/validate/smoke helpers. | TASK-0004 todo 3 | TASK-0004 | generated helper scripts and docs | delivered | contradicted: root-invoked helpers do not reliably use generated-workspace cwd |
+| Add concise generated start/validate/smoke helpers. | TASK-0004 todo 3 | TASK-0004 | generated helper scripts and docs | delivered | accepted: helpers are caller-cwd independent and lifecycle regressions cover healthy, unhealthy and timeout paths |
 | Test named presets and core combinations. | TASK-0004 todo 4 | TASK-0004 | automated matrix/generation/LAN tests | delivered | accepted |
 | Warn or reject oversize/risky combinations. | TASK-0004 todo 5 | TASK-0004 | warnings/failures | delivered | accepted-with-limitation: warnings are profile/alias rules, not detected hardware fit |
 | Document shorthand matrix and go/no-go interpretation. | TASK-0004 todo 6 | TASK-0004 | docs and changelog | delivered | accepted after TASK-0006 clarifies that GO is static only |
@@ -115,47 +115,47 @@ resolved by TASK-0006; engineering changes are routed to TASK-0007.
 ### F-001 — Generated helper working directory
 
 - severity: high
-- evidence: root docs invoked `./generated/.../scripts/start.sh`, while generated wrappers call `./scripts/...` relative to caller cwd.
+- evidence: TASK-0007 changed generated wrappers to resolve their own workspace; `test_generated_lifecycle_scripts_are_cwd_independent_bounded_and_stop` exercises root/workspace invocation and bounded failure.
 - scope_owner: TASK-0007 / engineering-manager
 - disposition: TASK-0007
-- status: open
-- product correction: docs now require `cd generated/<workspace>` before helpers.
+- status: resolved
+- resolution: caller-cwd-independent wrappers, generated golden fixture, and lifecycle regression are integrated.
 
 ### F-002 — Repository model path is not generated-workspace model path
 
 - severity: high
-- evidence: wizard checks `./models/<preset>.gguf`; generated Compose mounts workspace-relative `./models:/models:ro`; generation does not materialize that directory.
+- evidence: TASK-0007 now resolves and confines the repository model source, writes the absolute host path to the manifest, and bind-mounts it read-only at `/models/model.gguf`; documentation-contract tests enforce the no-copy policy.
 - scope_owner: TASK-0007 / engineering-manager
 - disposition: TASK-0007
-- status: open
-- product correction: docs disclose the temporary copy requirement.
+- status: resolved
+- resolution: repository and generated documentation now use one host/container path contract without undocumented copying.
 
 ### F-003 — Validation claims exceeded implementation
 
 - severity: medium
-- evidence: `validator.py` verifies manifest/file/bind metadata but not model existence, executable bits, host tools, memory fit, Compose runtime, versions, or live health.
+- evidence: `validate` now exposes `structure`, `host`, and `runtime` tiers; tests cover missing/unreadable models, Docker availability, runtime health, image/runtime contract mismatch, executable helpers, and fail-closed posture.
 - scope_owner: TASK-0007 / engineering-manager
 - disposition: TASK-0007
-- status: open
-- product correction: docs describe validation as static workspace validation.
+- status: resolved
+- resolution: structure output explicitly says what is not verified; host and runtime claims require their respective executable evidence.
 
 ### F-004 — LAN allowlist is recorded but not enforced
 
 - severity: high
-- evidence: generated LAN Compose binds `0.0.0.0`, passes an API key, and records `LAN_ALLOWLIST`; it emits no firewall/proxy enforcement artifacts.
+- evidence: `render.py`, `matrix`, generated manifests, README surfaces, and LAN negative tests reject all `--access lan` generation, including bearer-token plus allowlist inputs.
 - scope_owner: TASK-0007 / security-engineer
 - disposition: TASK-0007
-- status: open
-- product correction: LAN is documented as guarded generation plus mandatory manual firewall enforcement.
+- status: resolved
+- resolution: LAN remains non-delivered and fail-closed; safe refusal is accepted, not represented as LAN support.
 
 ### F-005 — Destructive overwrite guidance
 
 - severity: medium
-- evidence: `render.py` uses `shutil.rmtree(out_path)` for `--force`; quick starts previously promoted `--force`.
+- evidence: TASK-0007 restricts replacement to recognized generated directories, atomically moves the prior workspace to a uniquely named sibling backup, restores it on failure, and retains explicit backup/restore/rollback tools.
 - scope_owner: TASK-0007 / engineering-manager
 - disposition: TASK-0007
-- status: open
-- product correction: normal docs no longer recommend `--force`.
+- status: resolved
+- resolution: overwrite is bounded and recoverable; unrecognized operator directories are refused.
 
 ### F-006 — Static matrix GO was easy to read as runtime support
 
@@ -172,7 +172,7 @@ resolved by TASK-0006; engineering changes are routed to TASK-0007.
 - evidence: roadmap lists Coding, RAG, and optional Vision, while implementation has only `manifests/chat.json` and `templates/chat/`.
 - scope_owner: product-manager
 - disposition: follow-up
-- status: open
+- status: accepted
 - scope note: Coding/RAG are approved roadmap work; Vision and acceleration remain feasibility/deferred work.
 
 ### F-008 — LLM Wiki was structurally valid but empty
@@ -205,25 +205,27 @@ resolved by TASK-0006; engineering changes are routed to TASK-0007.
 - severity: low
 - evidence: kickoff Markdown says `pending Director approval`; `.pm-harness/harness.json` records KICK-0001 approved by Director at `2026-07-23T23:14:09Z`.
 - scope_owner: pm-orchestrator
-- disposition: follow-up
-- status: open
+- disposition: accepted
+- status: resolved
 - handling: both claims are retained in the wiki; historical ceremony was not rewritten.
 
 ### F-012 — Live serving and benchmark acceptance is absent
 
 - severity: high
-- evidence: `logs/benchmarks/*.md` records `placeholder`/`not-tested`; static tests do not provide a model response, latency, memory, or quality result.
+- evidence: the strict TASK-0007 benchmark contract and fake-runtime tests are integrated, but no authorized `.gguf` exists in scope and no real model response, latency, throughput, or peak-memory measurement was run.
 - scope_owner: TASK-0007 / ml-systems-engineer
-- disposition: TASK-0007
-- status: open
+- disposition: accepted
+- status: accepted-with-limitation
+- limitation: real GGUF inference remains explicitly `not-run`; the Director/operator owns supplying an authorized artifact and target Linux runtime for future evidence.
 
 ### F-013 — Post-closure wizard work is not mapped to TASK-0001..0005
 
 - severity: medium
-- evidence: commits `b75a3aa` and `47027c7` add wizard spec/code after the five audited tasks, but CHANGELOG has no wizard entry and no closed task claims it.
+- evidence: commits `b75a3aa` and `47027c7` remain historically outside TASK-0001..0005; current wizard behavior is covered by TASK-0007 regression tests and current changelog fixes without rewriting historical task claims.
 - scope_owner: pm-orchestrator
-- disposition: follow-up
-- status: open
+- disposition: accepted
+- status: resolved
+- handling: historical attribution is preserved; current behavior is governed and tested.
 
 ## TASK-0007 engineering handoff
 
@@ -231,77 +233,102 @@ resolved by TASK-0006; engineering changes are routed to TASK-0007.
 
 - reproduction: generate a workspace, remain at repository root, invoke `./generated/<name>/scripts/{validate,start,smoke}.sh`.
 - expected: each helper operates on its own generated workspace regardless of caller cwd.
-- actual: wrappers resolve `./scripts/...` and Compose files from caller cwd.
+- actual: resolved; wrappers derive their own directory and lifecycle tests exercise invocation outside the workspace.
 - user-visible acceptance: all helpers pass a fake-Docker cwd/Compose regression from repository root and workspace root.
+- disposition/status: TASK-0007 / resolved.
 
 ### H-002 — Container-visible model source
 
 - reproduction: place a preset file at repository `models/<alias>.gguf`, run wizard/generate, inspect generated Compose mount and model path.
 - expected: a model that passes preflight is visible at the generated container path.
-- actual: preflight checks repository root; Compose mounts generated-workspace `./models`.
+- actual: resolved; the confined absolute repository model source is bind-mounted read-only to `/models/model.gguf`.
 - user-visible acceptance: one documented placement succeeds through Compose model resolution without undocumented copying.
+- disposition/status: TASK-0007 / resolved.
 
 ### H-003 — Validation contract
 
 - reproduction: generate a workspace with missing model, non-executable helper, invalid memory field, or absent Docker and run generator `validate`.
 - expected: documented controls are checked or explicitly separated into host/runtime tiers.
-- actual: metadata validation can return success.
+- actual: resolved; explicit structure, host, and runtime tiers prevent structure-only success from becoming a host/runtime claim.
 - user-visible acceptance: docs and commands expose static, host, and live tiers with negative tests for every promised invariant.
+- disposition/status: TASK-0007 / resolved.
 
 ### H-004 — Enforced LAN boundary
 
 - reproduction: generate authenticated LAN output with an allowlist and inspect network enforcement artifacts.
 - expected: only allowlisted sources can reach the service; output includes enforceable firewall/proxy configuration.
-- actual: allowlist is metadata; host port binds all interfaces.
-- user-visible acceptance: unsafe LAN output cannot start without effective auth and allowlist enforcement, with a testable deny path.
+- actual: safely refused; both `matrix` and `generate` reject LAN, including auth/allowlist inputs, and generated localhost artifacts cannot claim an inert allowlist.
+- user-visible acceptance: unsafe LAN output cannot be generated; delivery of LAN support still requires a separately approved TLS gateway and mechanically enforced allowlist.
+- disposition/status: TASK-0007 / resolved as fail-closed non-delivery.
 
 ### H-005 — Recoverable overwrite
 
 - reproduction: put an operator marker in existing output and generate into it with `--force`.
 - expected: refusal, backup, or explicit recoverable lifecycle.
-- actual: directory is recursively removed.
+- actual: resolved; only recognized generated workspaces can be atomically displaced to a recoverable sibling backup, with rollback on failed replacement.
 - user-visible acceptance: onboarding never requires destructive overwrite; any overwrite path states impact and governs recovery.
+- disposition/status: TASK-0007 / resolved.
 
 ### H-006 — Real runtime evidence
 
 - reproduction: inspect TASK-0001 benchmark reports or run static unit/matrix gates.
 - expected: one real target-like model start with HTTP response, latency, and memory.
-- actual: placeholder/not-tested reports only.
+- actual: the repository now enforces a strict benchmark schema and rejects missing regression measurements, but the authorized real-GGUF run remains `not-run`.
 - user-visible acceptance: sanitized report records model/quantization/runtime, target hardware, HTTP success, time-to-first-response, throughput, and peak memory.
+- disposition/status: accepted limitation; external evidence owner is the Director/operator supplying an authorized GGUF and target Linux runtime.
 
-## Independent command evidence
+## Final independent command evidence — 2026-07-26
 
-Live Docker/model-serving remains `not-run` pending TASK-0007 prerequisites and
-is not inferred from the static commands.
+TASK-0007 is closed after superior review with all 25 technical rows reconciled,
+97 tests and the full locked-environment CI green. This TASK-0006 rerun uses
+the literal approved-plan commands. Live Docker/model serving remains `not-run`
+because no authorized `.gguf` exists; it is not inferred from static, fixture,
+host-inspection, or schema evidence.
 
 | command | exit code | result |
 |---|---:|---|
-| `python3 -m unittest` | 0 | 12 tests passed |
-| `python3 -m ai_server_generator --help` | 0 | help lists list/generate/matrix/validate/wizard |
+| `python3 -m unittest` | 0 | 97 tests passed |
+| `python3 -m ai_server_generator --help` | 0 | help lists list/generate/matrix/validate/wizard/doctor |
 | `python3 -m ai_server_generator list profiles` | 0 | medium-fast, medium, good |
 | `python3 -m ai_server_generator list setups` | 0 | chat-localhost-medium shortcut and Chat only |
 | `python3 -m ai_server_generator list models` | 0 | five requested preset aliases listed |
-| `python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access localhost` | 0 | static `Decision: GO`; resolved Chat/medium/localhost |
-| `python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/task-0006-acceptance --force` | 0 | fresh dedicated workspace; 11 files |
-| `python3 -m ai_server_generator validate generated/task-0006-acceptance` | 0 | static workspace valid |
-| guarded LAN negative generation | 1 | expected rejection: bearer token and allowlist required; no output written |
-| `python3 .pm-harness/bin/harness.py validate` | 0 | no errors or warnings |
+| `python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access localhost` | 0 | static `Decision: WARN`; nominal planning fit explicitly says model, host, runtime and quality are unverified |
+| `python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/task-0006-acceptance --force` | 0 | dedicated workspace regenerated; 13 files |
+| `python3 -m ai_server_generator validate generated/task-0006-acceptance` | 0 | structure valid; output explicitly marks model, Docker, host resources and runtime endpoint `NOT VERIFIED` |
+| `python3 -m ai_server_generator generate --preset devstral-small-v25.07 --profile medium --access lan --out generated/task-0006-invalid-lan --dry-run` | 1 | expected safe refusal pending authenticated TLS gateway and mechanically enforced allowlist |
+| `python3 .pm-harness/bin/harness.py validate` | 0 | no errors; one pre-transition stuck-in-progress warning for TASK-0006 |
 | `python3 .pm-harness/bin/harness.py wiki check` | 0 | no errors or warnings |
 | `python3 .pm-harness/bin/harness.py changelog check --task TASK-0006` | 0 | no errors or warnings |
-| `python3 .pm-harness/bin/harness.py plan check TASK-0006` | 1 | expected partial-pass result; todo 7 remains unchecked pending TASK-0007 |
-| live Docker/model serving | not-run | target model/runtime prerequisites and TASK-0007 remediation evidence unavailable |
+| `python3 .pm-harness/bin/harness.py plan check TASK-0006` | 0 | all seven approved-plan todos are checked; no errors or warnings |
+| live Docker/model serving | not-run | no authorized `.gguf`; no endpoint, latency, throughput, memory, quality, or compatibility result is claimed |
 
-## Partial recommendation
+## Final recommendation
 
-- Accepted: generator-first architecture and roadmap; Python/Jinja2 CLI; Chat
-  workspace generation; profile/preset discovery; static LAN input guard;
-  naming proposal and human documentation structure.
-- Accepted with limitations: target-host Linux/Docker operation, balanced
-  performance, all model presets, generated helpers, and LAN operation.
-- Resolved product defects: matrix-GO overclaim, unsafe default overwrite
-  guidance in onboarding, missing limitation disclosure, and empty wiki.
+- Accepted deliverables: generator-first architecture and roadmap;
+  Python/Jinja2 CLI; Chat/localhost workspace generation; profile/preset
+  discovery; tiered validation; caller-cwd-independent helpers; bounded
+  recoverable replacement; naming proposal; human documentation; populated
+  LLM Wiki; locked CI and supply-chain evidence.
+- Accepted with limitations: model aliases and hardware-fit output remain
+  planning guidance; target-Linux Docker/GGUF compatibility and balanced
+  latency, throughput, memory and quality are `not-run`. The strict benchmark
+  contract is accepted as enforcement, never as a measurement.
+- Resolved defects: F-001 through F-005 and the repository-local portions of
+  F-012 were remediated by closed TASK-0007; F-006 and F-008 were corrected by
+  TASK-0006; historical drift/attribution findings F-009 through F-011 and
+  F-013 have explicit accepted dispositions without rewriting history.
+- Safe refusal: LAN is not a delivered capability. The current product rejects
+  all LAN generation until a separately approved authenticated TLS gateway and
+  mechanically enforced client allowlist exist.
 - Pending approved roadmap: Coding and minimal RAG setup implementation.
 - Deferred/evaluation: Vision, iGPU acceleration, fine-tuning, multi-model,
   and broader operations milestones.
-- No new scope was approved by this audit. Final acceptance waits for TASK-0007
-  evidence and TASK-0006 todo 7.
+- Director/scope decisions: native Codex PM-Harness support, LAN/network policy,
+  runtime/model artifact selection, distribution/legal readiness, and any
+  roadmap implementation remain outside TASK-0006. No new scope is approved.
+
+Recommendation: accept TASK-0001 through TASK-0005 as the repository-local
+Chat/localhost generator baseline with the limitations above, and advance
+TASK-0006 to superior review. Do not describe the project as real-GGUF runtime
+verified, LAN-capable, Coding/RAG-complete, Vision-capable, accelerated, or
+distribution-ready.

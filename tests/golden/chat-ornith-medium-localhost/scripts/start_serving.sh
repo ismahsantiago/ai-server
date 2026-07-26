@@ -37,6 +37,11 @@ compose() {
   docker compose --project-directory "${WORKSPACE}" -f "${WORKSPACE}/docker-compose.yml" "$@"
 }
 
+was_running=0
+if compose ps --status running --services 2>/dev/null | grep -qx 'llama-server'; then
+  was_running=1
+fi
+
 compose up -d
 deadline=$((SECONDS + READINESS_TIMEOUT))
 while [ "${SECONDS}" -lt "${deadline}" ]; do
@@ -46,10 +51,39 @@ while [ "${SECONDS}" -lt "${deadline}" ]; do
     compose ps
     exit 0
   fi
+  container_id="$(compose ps -q llama-server 2>/dev/null || true)"
+  if [ -n "${container_id}" ]; then
+    health_status="$(
+      docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+        "${container_id}" 2>/dev/null || true
+    )"
+    case "${health_status}" in
+      unhealthy|exited|dead)
+        printf "Runtime entered terminal state: %s.\n" "${health_status}" >&2
+        compose ps >&2 || true
+        compose logs --tail 80 llama-server >&2 || true
+        if [ "${was_running}" -eq 0 ]; then
+          compose down --timeout 30 >&2 || true
+        fi
+        exit 1
+        ;;
+      starting|created|running|"")
+        printf "Runtime state: %s; waiting for health endpoint.\n" "${health_status:-starting}" >&2
+        ;;
+    esac
+  else
+    printf "Runtime state: starting; container id not available yet.\n" >&2
+  fi
   sleep "${READINESS_INTERVAL}"
 done
 
 printf "Runtime readiness timed out after %s seconds.\n" "${READINESS_TIMEOUT}" >&2
 compose ps >&2 || true
 compose logs --tail 80 llama-server >&2 || true
+if [ "${was_running}" -eq 0 ]; then
+  printf "Stopping the unhealthy stack started by this command.\n" >&2
+  compose down --timeout 30 >&2 || true
+else
+  printf "The stack was already running; leaving it unchanged for diagnosis.\n" >&2
+fi
 exit 1

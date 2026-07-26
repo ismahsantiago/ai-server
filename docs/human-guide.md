@@ -1,14 +1,105 @@
 # Human guide: run ai-server with the generator-first workflow
 
-This guide is for human operators who want a practical command path from clone
-to a local chat endpoint.
+This guide is the operator path from a repository clone to a local chat
+endpoint. The supported exposure is localhost only.
 
-## 1) Quick local chat setup
+## 1) Prepare the model
 
-### Optional: use the interactive wizard (localhost only)
+Install the Python dependency and place the selected GGUF file under the
+repository-root `models/` directory:
 
-If you have the preset model weight file present at `./models/<preset>.gguf`,
-you can run:
+```bash
+python3 -m pip install -r requirements.txt
+mkdir -p models
+# Obtain an approved model through its official distribution channel.
+# Example destination:
+MODEL_PATH="$PWD/models/ornith-9b.gguf"
+test -f "$MODEL_PATH"
+sha256sum "$MODEL_PATH"
+```
+
+The generator resolves that repository-root path to an absolute host path.
+Generated Compose mounts the same file read-only as `/models/model.gguf`.
+Do not copy the model into the generated workspace.
+
+## 2) Preview the scenario
+
+List the available values if needed:
+
+```bash
+python3 -m ai_server_generator list models
+python3 -m ai_server_generator list profiles
+```
+
+Preview a localhost scenario:
+
+```bash
+python3 -m ai_server_generator matrix \
+  --preset ornith-9b \
+  --profile medium \
+  --access localhost \
+  --model-path "$MODEL_PATH"
+```
+
+`matrix` reports `WARN` when a scenario fits its static planning assumptions
+or `NO-GO` when it is refused. It never reports `GO`: it does not prove that
+the model exists, Docker works, the model fits memory, or runtime targets are
+met.
+
+## 3) Generate and validate
+
+From the repository root:
+
+```bash
+WORKSPACE=generated/ornith-medium-localhost
+
+python3 -m ai_server_generator generate \
+  --preset ornith-9b \
+  --profile medium \
+  --access localhost \
+  --model-path "$MODEL_PATH" \
+  --out "$WORKSPACE"
+
+python3 -m ai_server_generator validate "$WORKSPACE" --tier host
+```
+
+The host tier adds model-file and Docker/Compose checks to structural
+validation. Inspect `$WORKSPACE/manifest.json` to see the resolved host model
+path, `/models/model.gguf` container path, exact image digest, generation
+fingerprint, and helper commands.
+
+Use a new output directory for regeneration. `--force` is limited to a
+generator-owned workspace under `generated/`, but it still replaces that
+workspace; back up operator changes first.
+
+## 4) Start, smoke, and stop
+
+The lifecycle actions are generated scripts, not generator subcommands. The
+scripts resolve their own workspace and may be called from any directory:
+
+```bash
+"$WORKSPACE/scripts/start.sh"
+"$WORKSPACE/scripts/smoke.sh"
+python3 -m ai_server_generator validate "$WORKSPACE" --tier runtime
+```
+
+Send a direct request if desired:
+
+```bash
+curl -sS -X POST "http://127.0.0.1:${HOST_PORT:-8000}/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"local","messages":[{"role":"user","content":"Say hello from local server"}],"max_tokens":64}'
+```
+
+When finished:
+
+```bash
+"$WORKSPACE/scripts/stop.sh"
+```
+
+## 5) Guided alternative
+
+The wizard follows the same localhost contract:
 
 ```bash
 python3 -m ai_server_generator wizard \
@@ -17,141 +108,49 @@ python3 -m ai_server_generator wizard \
   --run no
 ```
 
-It will generate + validate into `generated/<preset>-<profile>-localhost/`
-and leave you with `scripts/start.sh` and `scripts/smoke.sh`.
+It expects `models/<preset>.gguf`, generates
+`generated/<preset>-<profile>-localhost/`, and leaves the lifecycle scripts
+inside that workspace. Without a terminal, supply `--preset`, `--profile`, and
+`--run`; the wizard does not start a server implicitly.
 
-The wizard checks for the model under repository-root `models/`, while the
-current generated Compose file mounts a workspace-local `models/` directory.
-Before starting, copy the selected file into that generated directory as shown
-below. This limitation is tracked for engineering remediation.
+## 6) LAN status: planned and blocked
 
-From repository root:
+LAN serving is not an opt-in mode in the current product. Both `matrix` and
+`generate` refuse `--access lan`, even if bearer-token and allowlist flags are
+provided. This fail-closed state remains until an authenticated TLS gateway,
+mechanically enforced client allowlist, and bypass tests exist.
 
-```bash
-python3 -m pip install -r requirements.txt
-python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access localhost
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost
-python3 -m ai_server_generator validate generated/ornith-medium-localhost
-mkdir -p generated/ornith-medium-localhost/models
-cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
-cd generated/ornith-medium-localhost
-./scripts/start.sh
-```
+Do not change the generated bind to `0.0.0.0`, forward or publish its port, or
+treat the LAN runbook as an authorization exception. See
+`docs/lan-safe-runbook.md` for the future acceptance criteria.
 
-Test the endpoint:
+## 7) Troubleshooting
 
-```bash
-curl -sS -X POST "http://127.0.0.1:${HOST_PORT:-8000}/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"local","messages":[{"role":"user","content":"Say hello from local server"}],"max_tokens":64}'
-```
-
-## 2) Preset matrix preview
-
-Use matrix before generation to confirm GO/NO-GO and resolved inputs.
-
-`GO` is a static compatibility decision. It does not verify model-file
-availability, Docker/runtime health, measured memory fit, latency, or quality.
-
-List available model presets:
-
-```bash
-python3 -m ai_server_generator list models
-```
-
-Preview a localhost scenario:
-
-```bash
-python3 -m ai_server_generator matrix --preset qwen3-coder-7b --profile medium --access localhost
-```
-
-Preview a guarded LAN scenario:
-
-```bash
-python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24
-```
-
-If required LAN controls are missing, matrix returns `Decision: NO-GO`.
-
-## 3) Generate -> validate -> start flow (canonical)
-
-Use this as your standard operating path:
-
-```bash
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access localhost --out generated/ornith-medium-localhost
-python3 -m ai_server_generator validate generated/ornith-medium-localhost
-mkdir -p generated/ornith-medium-localhost/models
-cp models/ornith-9b.gguf generated/ornith-medium-localhost/models/
-cd generated/ornith-medium-localhost
-./scripts/validate.sh
-./scripts/start.sh
-./scripts/smoke.sh
-```
-
-Health check:
-
-```bash
-docker compose -f generated/ornith-medium-localhost/docker-compose.yml ps
-curl -sS http://127.0.0.1:${HOST_PORT:-8000}/health
-```
-
-## 4) LAN guarded usage (opt-in only)
-
-LAN mode requires both auth and allowlist controls.
-
-```bash
-python3 -m ai_server_generator matrix --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24
-python3 -m ai_server_generator generate --preset ornith-9b --profile medium --access lan --auth bearer-token --lan-allowlist 192.168.1.0/24 --out generated/ornith-medium-lan
-python3 -m ai_server_generator validate generated/ornith-medium-lan
-```
-
-The generator records the allowlist but does not currently enforce it. Review
-and enforce `docs/lan-safe-runbook.md` firewall/auth steps before starting a
-LAN-exposed service. Generation success is not authorization to expose it.
-
-## 5) Troubleshooting quick checks
-
-If something fails, run these quick checks in order:
+Run these checks in order:
 
 ```bash
 python3 -m ai_server_generator list setups
 python3 -m ai_server_generator list profiles
 python3 -m ai_server_generator list models
-python3 -m ai_server_generator validate generated/ornith-medium-localhost
-docker compose -f generated/ornith-medium-localhost/docker-compose.yml ps
+python3 -m ai_server_generator validate "$WORKSPACE" --tier host
+docker compose -f "$WORKSPACE/docker-compose.yml" ps
+docker compose -f "$WORKSPACE/docker-compose.yml" logs --tail=100
 ```
 
-Common failure patterns:
+Common failures:
 
-- `ERROR: unknown profile/setup`: check `list profiles` / `list setups` names.
-- `Decision: NO-GO` for LAN: provide both `--auth bearer-token` and
-  `--lan-allowlist`.
-- Validation errors for missing files: generate into a new output directory.
-  `--force` recursively deletes the existing generated output.
-- No health response: check Docker status and generated compose service logs.
-
-## 6) How to know if we are going well
-
-Use this command set as a quality signal pack:
-
-```bash
-python3 -m unittest
-python3 .pm-harness/bin/harness.py validate
-python3 .pm-harness/bin/harness.py wiki check
-python3 .pm-harness/bin/harness.py changelog check --task TASK-0005
-```
-
-For this task's plan adherence:
-
-```bash
-python3 .pm-harness/bin/harness.py plan check TASK-0005
-```
-
-Green exits across these checks indicate docs, harness state, and verification
-gates are aligned.
+- `unknown profile/setup`: use the exact value printed by `list`.
+- `Decision: NO-GO` for LAN: this is the intended refusal, not a request for
+  more flags.
+- Missing model during host validation: verify the manifest's
+  `host_model_path`; do not copy the file into the workspace.
+- Missing generated files: generate into a new workspace or restore a known
+  backup before using `--force`.
+- No health response: inspect Compose status and service logs, then stop the
+  stack if startup did not complete.
 
 ## Compatibility note
 
 Legacy root files (`docker-compose.yml`, `scripts/`, `config/profiles/`) remain
-for compatibility/examples. Canonical operation is always generated workspaces
-under `generated/<preset-profile-access>/...`.
+compatibility examples. Canonical operation uses generated workspaces under
+`generated/<preset-profile-access>/...`.

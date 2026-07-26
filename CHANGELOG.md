@@ -52,6 +52,11 @@ released `## [x.y.z]` section.
 
 ### Fixed
 
+- TASK-0007: Hardened generated workspaces and integration checks with
+  fail-closed model-path confinement, validated backup/restore inventories,
+  bounded startup cleanup, strict benchmark evidence, hash-locked dependency
+  installation, generated-output drift checks, and current-run-only audit
+  evidence validation.
 - TASK-0008: Fixed the developer-checkout harness block in `scripts/ci.sh` so it no longer hard-codes `plan check TASK-0007`; it now honors `HARNESS_PLAN_TASK` for the task under integration and automatically checks only task manifests already claiming review/approval/closure, preventing unrelated in-progress plans from keeping CI red.
 - TASK-0007: Fixed the serving image referencing `ghcr.io/ggerganov/llama.cpp`, a repository that no longer exists and returns 404, so no generated workspace could pull its image; the canonical `ghcr.io/ggml-org/llama.cpp` is now pinned by digest.
 - TASK-0007: Fixed the CI shellcheck gate, which could never pass because the `CDPATH= cd` idiom trips SC1007 across every repository and generated script; replaced with the equivalent `CDPATH='' cd`.

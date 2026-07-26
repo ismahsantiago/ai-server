@@ -12,6 +12,7 @@ from .data import PROJECT_ROOT
 from .render import (
     LOCALHOST_SECURITY_POSTURE,
     MANIFEST_SCHEMA,
+    MODELS_ROOT,
     OWNERSHIP_FILE,
     OWNERSHIP_SCHEMA,
     SERVING_IMAGE,
@@ -28,6 +29,7 @@ REQUIRED_MANIFEST_KEYS = {
     "container_model_path",
     "model_contract",
     "serving_image",
+    "runtime_contract",
     "preset_alias",
     "preset_name",
     "preset_summary",
@@ -351,6 +353,12 @@ def _validate_model_contract(manifest: dict[str, Any], errors: list[str]) -> Non
     required = {
         "contract_version",
         "metadata_status",
+        "artifact_repository",
+        "artifact_revision",
+        "artifact_filename",
+        "artifact_size_bytes",
+        "artifact_sha256",
+        "chat_template",
         "architecture",
         "parameter_billions",
         "quantization_assumption",
@@ -364,13 +372,92 @@ def _validate_model_contract(manifest: dict[str, Any], errors: list[str]) -> Non
     missing = sorted(required - set(contract))
     if missing:
         errors.append(f"manifest model_contract missing keys: {', '.join(missing)}")
-    if contract.get("contract_version") != 1:
-        errors.append("manifest model_contract.contract_version must be 1")
+    if contract.get("contract_version") != 2:
+        errors.append("manifest model_contract.contract_version must be 2")
     if contract.get("metadata_status") not in {
         "planning-assumption-only",
         "custom-artifact-unverified",
+        "verified-artifact",
     }:
         errors.append("manifest model_contract.metadata_status is unsupported")
+    if contract.get("metadata_status") == "verified-artifact":
+        verified_fields = {
+            "artifact_repository": str,
+            "artifact_revision": str,
+            "artifact_filename": str,
+            "artifact_size_bytes": int,
+            "artifact_sha256": str,
+            "chat_template": str,
+        }
+        for name, expected_type in verified_fields.items():
+            value = contract.get(name)
+            if not isinstance(value, expected_type) or isinstance(value, bool) or not value:
+                errors.append(f"manifest verified model_contract.{name} is incomplete")
+        digest = contract.get("artifact_sha256")
+        if isinstance(digest, str) and (
+            len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest)
+        ):
+            errors.append("manifest model_contract.artifact_sha256 must be lowercase SHA-256")
+
+
+def _validate_runtime_contract(manifest: dict[str, Any], errors: list[str]) -> None:
+    contract = manifest.get("runtime_contract")
+    if not isinstance(contract, dict):
+        errors.append("manifest runtime_contract must be an object")
+        return
+    required = {
+        "contract_version",
+        "implementation",
+        "image_repository",
+        "image_tag",
+        "image_digest",
+        "runtime_version",
+        "runtime_revision",
+        "flag_schema",
+        "compatibility_status",
+    }
+    missing = sorted(required - set(contract))
+    if missing:
+        errors.append(f"manifest runtime_contract missing keys: {', '.join(missing)}")
+    if contract.get("contract_version") != 1:
+        errors.append("manifest runtime_contract.contract_version must be 1")
+    if contract.get("compatibility_status") not in {
+        "static-template-only",
+        "runtime-verified",
+    }:
+        errors.append("manifest runtime_contract.compatibility_status is unsupported")
+    expected_image = (
+        f"{contract.get('image_repository')}:{contract.get('image_tag')}"
+        f"@{contract.get('image_digest')}"
+    )
+    if manifest.get("serving_image") != expected_image:
+        errors.append("manifest runtime_contract image fields must match serving_image")
+    if contract.get("compatibility_status") == "runtime-verified":
+        for name in ("runtime_version", "runtime_revision"):
+            value = contract.get(name)
+            if not isinstance(value, str) or not value:
+                errors.append(f"manifest verified runtime_contract.{name} is incomplete")
+
+
+def _validate_model_source(manifest: dict[str, Any], errors: list[str]) -> None:
+    host_path_value = manifest.get("host_model_path")
+    if not isinstance(host_path_value, str) or not host_path_value:
+        errors.append("manifest host_model_path must be a non-empty string")
+        return
+    host_path = Path(host_path_value)
+    if not host_path.is_absolute():
+        errors.append("manifest host_model_path must be absolute")
+        return
+    resolved = host_path.resolve(strict=False)
+    try:
+        resolved.relative_to(MODELS_ROOT)
+    except ValueError:
+        errors.append("manifest host_model_path must resolve inside the repository models/ root")
+        return
+    if resolved == MODELS_ROOT:
+        errors.append("manifest host_model_path must resolve to a file below the repository models/ root")
+    elif resolved.exists() and not resolved.is_file():
+        errors.append("manifest host_model_path must resolve to a regular file")
 
 
 def _validate_host(
@@ -509,6 +596,8 @@ def validate_workspace(path_text: str, *, tier: str = "structure") -> list[str]:
         errors.append("localhost workspace must not claim a LAN allowlist")
     _validate_security_posture(manifest, errors)
     _validate_model_contract(manifest, errors)
+    _validate_runtime_contract(manifest, errors)
+    _validate_model_source(manifest, errors)
 
     dotenv = _load_dotenv(workspace / ".env", errors)
     token = dotenv.get("API_BEARER_TOKEN")

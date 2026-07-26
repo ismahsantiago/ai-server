@@ -86,8 +86,13 @@ Use this sequence for normal operation:
 1. `matrix` to preview guardrails and the WARN/NO-GO decision.
 2. `generate` to create a self-contained workspace under `generated/...`.
 3. `validate` to verify required files and access posture.
-4. `start` from generated scripts.
-5. `smoke` and health checks, then `stop`.
+4. Run `generated/<workspace>/scripts/start.sh`.
+5. Run `generated/<workspace>/scripts/smoke.sh` and health checks.
+6. Run `generated/<workspace>/scripts/stop.sh` when finished.
+
+`matrix`, `generate`, and `validate` are generator subcommands. Start, smoke,
+and stop are scripts inside each generated workspace; there are no
+`ai_server_generator start`, `smoke`, or `stop` subcommands.
 
 ### Guided alternative
 
@@ -197,3 +202,87 @@ compatibility/examples. Prefer generated equivalents under
 - LAN hardening runbook: `docs/lan-safe-runbook.md`
 - Serving baseline notes: `docs/serving-baseline.md`
 - Docs index: `docs/README.md`
+
+## Linux runtime verification checklist
+
+Run this only on the Linux host that will serve the model. A successful static
+matrix or host inspection remains planning evidence; runtime readiness requires
+the live checks below.
+
+1. Prepare the checkout and tools:
+
+   ```bash
+   git clone <repository> ai-server
+   cd ai-server
+   python3 -m venv .venv
+   . .venv/bin/activate
+   python -m pip install -r requirements.txt
+   docker version
+   docker compose version
+   ```
+
+2. Put an approved GGUF below this checkout's `models/` root and record its
+   checksum:
+
+   ```bash
+   mkdir -p models
+   MODEL="$PWD/models/<approved-model>.gguf"
+   test -f "$MODEL"
+   sha256sum "$MODEL"
+   ```
+
+3. Inspect the host, then generate the smallest suitable localhost workspace:
+
+   ```bash
+   python -m ai_server_generator doctor \
+     --models-path "$PWD/models" \
+     --out artifacts/host-profile.json
+
+   PRESET=smollm3-3b
+   PROFILE=medium-fast
+   WORKSPACE="generated/${PRESET}-${PROFILE}-server-test"
+
+   python -m ai_server_generator matrix \
+     --preset "$PRESET" --profile "$PROFILE" \
+     --access localhost --model-path "$MODEL"
+
+   python -m ai_server_generator generate \
+     --preset "$PRESET" --profile "$PROFILE" \
+     --access localhost --model-path "$MODEL" \
+     --out "$WORKSPACE"
+
+   python -m ai_server_generator validate "$WORKSPACE" --tier host
+   ```
+
+   Review host blockers and the derived `FIT`/`NO-FIT` guidance. A `FIT`
+   recommendation is not a performance guarantee.
+
+4. Start and collect live evidence:
+
+   ```bash
+   "$WORKSPACE/scripts/start.sh"
+   docker compose -f "$WORKSPACE/docker-compose.yml" ps
+   python -m ai_server_generator validate "$WORKSPACE" --tier runtime
+   "$WORKSPACE/scripts/smoke.sh"
+
+   curl -sS -X POST http://127.0.0.1:8000/v1/chat/completions \
+     -H 'Content-Type: application/json' \
+     -d '{"model":"local","messages":[{"role":"user","content":"Reply with: runtime check passed"}],"max_tokens":64}'
+   ```
+
+   Minimum success means a healthy container, a passing runtime tier, a
+   successful smoke script, and a coherent HTTP 200 response. Retain the host
+   profile, model SHA-256, resolved image digest, Compose logs, and benchmark
+   output as evidence.
+
+5. Stop the workspace:
+
+   ```bash
+   "$WORKSPACE/scripts/stop.sh"
+   ```
+
+This version is localhost-only. Do not use `--access lan`, change the bind,
+forward or publish the port, or expose the workspace through a tunnel. The
+future LAN acceptance criteria are documented in `docs/lan-safe-runbook.md`;
+the runtime evidence boundary is documented in
+`docs/runtime-decision-phase-r.md`.

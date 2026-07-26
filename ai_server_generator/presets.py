@@ -19,8 +19,14 @@ class ModelPreset:
     minimum_host_ram_gb: float
     recommended_host_ram_gb: float
     default_context: int
+    artifact_repository: str | None = None
+    artifact_revision: str | None = None
+    artifact_filename: str | None = None
+    artifact_size_bytes: int | None = None
+    artifact_sha256: str | None = None
+    chat_template: str | None = None
     metadata_status: str = "planning-assumption-only"
-    contract_version: int = 1
+    contract_version: int = 2
     default_setup: str = "chat"
     default_profile: str = "medium"
     default_access: str = "localhost"

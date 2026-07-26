@@ -9,6 +9,9 @@
 # Usage: scripts/restore_workspace.sh <archive.tar.gz> <target-dir>
 set -euo pipefail
 
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
+
 usage() {
   printf "Usage: %s <archive.tar.gz> <target-dir>\n" "$0" >&2
 }
@@ -67,26 +70,94 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-tar -xzf "${ARCHIVE}" -C "${STAGING}"
+ROOT_ENTRY="${STAGING}/workspace"
+ARCHIVE="${ARCHIVE}" ROOT_ENTRY="${ROOT_ENTRY}" python3 - <<'PY'
+import json
+import os
+import shutil
+import stat
+import tarfile
+from pathlib import Path, PurePosixPath
 
-# The archive holds exactly one root directory; find it without parsing ls.
-ROOT_COUNT=0
-ROOT_ENTRY=""
-for entry in "${STAGING}"/*; do
-  [ -e "${entry}" ] || continue
-  ROOT_COUNT=$((ROOT_COUNT + 1))
-  ROOT_ENTRY="${entry}"
-done
+archive = Path(os.environ["ARCHIVE"])
+destination = Path(os.environ["ROOT_ENTRY"])
 
-if [ "${ROOT_COUNT}" -ne 1 ] || [ ! -d "${ROOT_ENTRY}" ]; then
-  printf "Archive does not contain exactly one workspace directory.\n" >&2
-  exit 1
-fi
+with tarfile.open(archive, "r:gz") as bundle:
+    members = bundle.getmembers()
+    if not members:
+        raise SystemExit("Archive is empty.")
 
-if [ ! -f "${ROOT_ENTRY}/manifest.json" ]; then
-  printf "Archive does not contain a generated workspace (no manifest.json).\n" >&2
-  exit 1
-fi
+    roots = set()
+    normalized = []
+    for member in members:
+        path = PurePosixPath(member.name)
+        if (
+            path.is_absolute()
+            or not path.parts
+            or any(part in {"", ".", ".."} for part in path.parts)
+        ):
+            raise SystemExit(f"Unsafe archive member path: {member.name}")
+        roots.add(path.parts[0])
+        if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
+            raise SystemExit(f"Unsupported archive member type: {member.name}")
+        normalized.append((member, path))
+    if len(roots) != 1:
+        raise SystemExit("Archive must contain exactly one workspace root.")
+
+    destination.mkdir(mode=0o700)
+    for member, path in normalized:
+        relative = PurePosixPath(*path.parts[1:])
+        if not relative.parts:
+            if not member.isdir():
+                raise SystemExit("Archive workspace root must be a directory.")
+            continue
+        target = destination.joinpath(*relative.parts)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if member.isdir():
+            target.mkdir(exist_ok=True)
+            continue
+        source = bundle.extractfile(member)
+        if source is None:
+            raise SystemExit(f"Cannot read archive member: {member.name}")
+        with source, target.open("xb") as output:
+            shutil.copyfileobj(source, output)
+        target.chmod(stat.S_IMODE(member.mode) & 0o777)
+
+manifest_path = destination / "manifest.json"
+if not manifest_path.is_file():
+    raise SystemExit("Archive does not contain a generated workspace manifest.")
+try:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+except (UnicodeError, json.JSONDecodeError) as exc:
+    raise SystemExit(f"Invalid workspace manifest: {exc}") from exc
+required = manifest.get("required_files")
+if not isinstance(required, list) or not required or any(
+    not isinstance(item, str) or not item for item in required
+):
+    raise SystemExit("Manifest required_files must be a non-empty string array.")
+expected = set(required)
+expected.add(".ai-server-generated.json")
+actual = {
+    path.relative_to(destination).as_posix()
+    for path in destination.rglob("*")
+    if path.is_file()
+}
+if actual != expected:
+    raise SystemExit(
+        "Workspace inventory mismatch: "
+        f"missing={sorted(expected - actual)!r}, unexpected={sorted(actual - expected)!r}"
+    )
+
+env_path = destination / ".env"
+if not env_path.is_file() or env_path.is_symlink():
+    raise SystemExit("Archive does not contain a regular .env file.")
+env_mode = stat.S_IMODE(env_path.stat().st_mode)
+if env_mode != 0o600:
+    raise SystemExit(f"Archive contains .env with unsafe mode {env_mode:o}; expected 600.")
+PY
+
+PYTHONPATH="${PROJECT_ROOT}${PYTHONPATH:+:${PYTHONPATH}}" \
+  python3 -m ai_server_generator validate "${ROOT_ENTRY}" --tier structure
 
 if [ -d "${TARGET}" ]; then
   DISPLACED="${TARGET_PARENT}/.${TARGET_NAME}.replaced-$(date -u +%Y%m%dT%H%M%SZ)"

@@ -2,46 +2,63 @@
 
 ## Summary
 
-TASK-0006 reconciles TASK-0001 through TASK-0005 against the approved product
-scope, corrects product documentation claims, and compiles the accepted state
-into the LLM Wiki. Engineering/runtime/security defects remain assigned to
-TASK-0007 and are not changed by this product-only work.
+TASK-0007 records a fresh independent audit and remediates every confirmed
+repository-local finding that can be closed without inventing live runtime,
+network, model, distribution, or legal evidence. The patch hardens dependency
+installation, audit evidence inputs, model-source validation, generated
+workspace lifecycle and recovery, benchmark evidence, documentation, golden
+fixture drift checks, and installed harness-agent conformance.
 
 ## Why / Context
 
-The Director requested a review of pending work and an audit against what was
-requested. See TASK-0006, KICK-0001, and
-`audits/TASK-0006-product-acceptance-audit.md`.
+The Director requested completion of the outstanding technical, security and
+operational audit work. The immutable Spanish pre-remediation deliverables and
+the append-only finding disposition are under
+`audits/audit_opencode_default_gpt-5_25-07-2026_20h23m/`. External Linux/model
+runs, future LAN gateway policy, Codex harness support, and conditional legal
+review are explicitly owned and blocked rather than represented as verified.
 
 ## Change type
 
 - [ ] Feature (new capability)
-- [ ] Fix (corrects existing behavior)
+- [x] Fix (corrects existing behavior)
 - [ ] Breaking (changes existing behavior/contract in an incompatible way)
-- [x] Docs
+- [ ] Docs
 - [ ] Chore / internal refactor (no observable behavior change)
 
 ## Risk & risk type
 
-Security/documentation risk: previous wording could imply static matrix or
-validation proved runtime/LAN support. The revised docs disclose the boundary,
-require manual firewall enforcement, and avoid normal `--force` guidance.
+Medium security and availability risk. The patch changes path confinement,
+dependency and audit supply-chain checks, generated secret-file handling,
+archive restoration, container lifecycle cleanup, and evidence contracts.
+Defaults remain localhost-only and fail-closed. Restore preserves displaced
+targets; startup tears down only a stack started by that invocation.
 
 ## How this was tested
 
-The exact TASK-0006 gate commands and literal exit codes are recorded in
-`audits/TASK-0006-product-acceptance-audit.md`. Final acceptance remains
-pending TASK-0007 evidence.
+- `python3 -m unittest` — exit 0, 97 tests.
+- `python3 -m unittest tests.test_cli tests.test_ci_contract tests.test_documentation_contract tests.test_harness_agents` — exit 0, 60 tests.
+- `python3 .pm-harness/bin/harness.py agents check` — exit 0 for OpenCode and Claude.
+- `python3 .pm-harness/bin/harness.py wiki check` — exit 0.
+- Frozen audit hashes were recomputed for the three immutable files whose
+  current hashes can be compared directly and matched `meta.md`.
+- The final full CI and independent whole-change security review remain
+  integration gates; no live Docker/model result is claimed here.
 
 ## Evidence
 
-Evidence: the audit scope register, closed-task reconciliation, F-001 through
-F-013, H-001 through H-006, fresh generated acceptance workspace, unit tests,
-harness validation, wiki validation, and changelog validation.
+Finding-level ownership, changed surfaces, focused tests and formal blockers
+for all 25 findings are in the final reconciliation section of
+`audits/audit_opencode_default_gpt-5_25-07-2026_20h23m/remediation.md`.
+Security approval is already recorded there for SEC7-001/OPS7-001 and
+SEC7-005; aggregate approval is intentionally pending.
 
 ## Checklist
 
-- [x] `CHANGELOG.md` has an `[Unreleased]` entry referencing this change
-- [x] Tests added/updated for this change (not applicable: product/docs-only; existing unit gates run)
-- [x] `harness.py validate` is clean
-- [x] Docs/wiki updated if this changes documented behavior (`harness.py wiki check` clean)
+- [x] `CHANGELOG.md` has an `[Unreleased]` entry referencing TASK-0007
+- [x] Tests added/updated for behavior-changing fixes
+- [x] `harness.py validate` has prior passing implementation evidence and is a final integration gate
+- [x] Docs updated; `harness.py wiki check` exits 0
+- [x] External/runtime/legal blockers have explicit owners and no unsupported claims
+- [x] Independent whole-change security review approved
+- [x] Full final CI and plan-adherence gates pass
