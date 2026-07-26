@@ -16,6 +16,19 @@ released `## [x.y.z]` section.
 
 ### Added
 
+- TASK-0008: Added `doctor`, a non-invasive host inspection command that writes
+  `artifacts/host-profile.json` by default, reports operator-actionable
+  software-readiness gaps, and keeps measured infrastructure facts separate
+  from its derived, explicitly provisional tier and preset recommendations.
+- TASK-0010: Added the authoritative hardware-tier product definition, its
+  operator-facing taxonomy, and an ADJUSTED verdict on the provisional mapping:
+  the host reserve was double-counted, so the corrected fit specification is
+  routed to TASK-0008 before the tier model is presented as authoritative.
+- TASK-0009: Added the Phase R runtime decision document comparing the pinned
+  llama.cpp status quo, Docker Model Runner, and Ollama in a container against
+  the eight KICK-0002 criteria, including evidence limits, recommendation, and
+  security-engineer handoff.
+- TASK-0011: Added the `LICENSE` file (Apache License 2.0, full unmodified text) at the repository root, and an explicit "License" section to generated `README.md` workspaces stating that the generator's Apache-2.0 license does not extend to generated output, which belongs to the operator, and that any bundled container image or model weights carry their own upstream licenses. Implements the Director's ESC-0002 decision. The third-party notice review for upstream runtime images (llama.cpp, and any future Docker Model Runner/Ollama integration) is carried forward to TASK-0009 and is not discharged here.
 - TASK-0003: Added the Python/Jinja2 `ai-server` generator CLI skeleton with profile/setup listing, dry-run generation, localhost chat workspace rendering, validation, and unsafe LAN rejection.
 - TASK-0002: Added the generator-first roadmap defining clone → generate → launch workflow, configuration families, CLI UX, architecture, backlog, and security controls.
 - TASK-0004: Added model preset catalog + aliases, `list models`, and `matrix` scenario preview with GO/NO-GO messaging.
@@ -29,6 +42,7 @@ released `## [x.y.z]` section.
 
 ### Changed
 
+- TASK-0011: Changed `pyproject.toml` to declare `license = "Apache-2.0"` and `license-files = ["LICENSE"]` (PEP 621, supported by the pinned `setuptools==81.0.0`), removing the `Private :: Do Not Upload` classifier and the "private project, carries no license" comment it no longer describes. Also corrected the `sbom.json` component description in `scripts/generate_sbom.py`, which previously read "Private project; not distributed."
 - TASK-0006: Clarified static matrix/validation boundaries, safe generated-workspace startup and overwrite guidance, current LAN enforcement limitations, and compiled the accepted product state into the LLM Wiki.
 - TASK-0003: Changed Sprint 1 serving assets into reusable generator source material and ignored `generated/` outputs by default.
 - TASK-0003: Hardened LAN generation checks to reject blank `--lan-allowlist` values even when `--auth bearer-token` is provided.
@@ -38,6 +52,7 @@ released `## [x.y.z]` section.
 
 ### Fixed
 
+- TASK-0008: Fixed the developer-checkout harness block in `scripts/ci.sh` so it no longer hard-codes `plan check TASK-0007`; it now honors `HARNESS_PLAN_TASK` for the task under integration and automatically checks only task manifests already claiming review/approval/closure, preventing unrelated in-progress plans from keeping CI red.
 - TASK-0007: Fixed the serving image referencing `ghcr.io/ggerganov/llama.cpp`, a repository that no longer exists and returns 404, so no generated workspace could pull its image; the canonical `ghcr.io/ggml-org/llama.cpp` is now pinned by digest.
 - TASK-0007: Fixed the CI shellcheck gate, which could never pass because the `CDPATH= cd` idiom trips SC1007 across every repository and generated script; replaced with the equivalent `CDPATH='' cd`.
 - TASK-0007: Fixed the golden fixture's `.env` being swallowed by the `.gitignore` `.env` rule, which would have failed the drift gate on a clean checkout.
@@ -54,4 +69,4 @@ released `## [x.y.z]` section.
 
 - TASK-0006: Documented the localhost-only fail-closed posture in `README.md` and `docs/lan-safe-runbook.md`, replacing guidance that pointed operators toward a LAN exposure path the generator refuses to produce.
 - TASK-0007: Pinned the serving container image by digest and made the validator reject any workspace whose image is not that exact reference, so a moved tag cannot change what runs.
-- TASK-0007: Recorded that this is a private, personally-used project that is not distributed and carries no license; `pyproject.toml` declares `Private :: Do Not Upload` so an accidental publish fails.
+- TASK-0007: Recorded that this was a private, personally-used project that was not distributed and carried no license; `pyproject.toml` declared `Private :: Do Not Upload` so an accidental publish would fail. Superseded by TASK-0011: the Director decided (ESC-0002) that the project is licensed Apache-2.0.

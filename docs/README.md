@@ -7,6 +7,7 @@ Operational runbooks and architecture notes.
 - `serving-baseline.md`: Docker-first local serving setup.
 - `lan-safe-runbook.md`: localhost default + LAN opt-in hardening steps.
 - `preset-matrix.md`: model preset catalog, shorthand generation, and matrix go/no-go preview.
+- `hardware-tiers.md`: product definition of what a given machine can serve.
 
 ## Canonical workflow (generator-first)
 

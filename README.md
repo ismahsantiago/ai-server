@@ -193,6 +193,7 @@ compatibility/examples. Prefer generated equivalents under
 - Human operations guide: `docs/human-guide.md`
 - Repository naming options: `docs/repo-name-suggestions.md`
 - Preset matrix details: `docs/preset-matrix.md`
+- Hardware tier product definition: `docs/hardware-tiers.md`
 - LAN hardening runbook: `docs/lan-safe-runbook.md`
 - Serving baseline notes: `docs/serving-baseline.md`
 - Docs index: `docs/README.md`

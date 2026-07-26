@@ -6,11 +6,12 @@ PROJECT_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 GENERATED_ROOT="${PROJECT_ROOT}/generated"
 ARTIFACTS_DIR="${PROJECT_ROOT}/artifacts"
 
-mkdir -p "${GENERATED_ROOT}" "${ARTIFACTS_DIR}"
+mkdir -p "${GENERATED_ROOT}" "${ARTIFACTS_DIR}" "${PROJECT_ROOT}/models"
 WORK_DIR="$(mktemp -d "${GENERATED_ROOT}/.ci-fixture.XXXXXX")"
-trap 'rm -rf -- "${WORK_DIR}"' EXIT HUP INT TERM
+MODEL_FIXTURE_DIR="$(mktemp -d "${PROJECT_ROOT}/models/.ci-fixture.XXXXXX")"
+MODEL_FIXTURE="${MODEL_FIXTURE_DIR}/fixture.gguf"
+trap 'rm -rf -- "${WORK_DIR}" "${MODEL_FIXTURE_DIR}"' EXIT HUP INT TERM
 
-MODEL_FIXTURE="${WORK_DIR}/fixture.gguf"
 OUTPUT_DIR="${WORK_DIR}/workspace"
 : > "${MODEL_FIXTURE}"
 
@@ -38,6 +39,8 @@ python3 -m ai_server_generator generate \
   --model-path "${MODEL_FIXTURE}" \
   --out "${OUTPUT_DIR}"
 python3 -m ai_server_generator validate "${OUTPUT_DIR}"
+python3 -m ai_server_generator doctor --no-write
+python3 -m ai_server_generator doctor --no-write --format json >/dev/null
 
 OUTPUT_DIR="${OUTPUT_DIR}" python3 - <<'PY'
 import json
@@ -114,7 +117,23 @@ if [ -f .pm-harness/bin/harness.py ]; then
   python3 .pm-harness/bin/harness.py validate
   python3 .pm-harness/bin/harness.py agents check
   python3 .pm-harness/bin/harness.py wiki check
-  python3 .pm-harness/bin/harness.py plan check TASK-0007
+  if [ -n "${HARNESS_PLAN_TASK:-}" ]; then
+    python3 .pm-harness/bin/harness.py plan check "${HARNESS_PLAN_TASK}"
+  fi
+  python3 - <<'PY'
+import json
+import subprocess
+from pathlib import Path
+
+for manifest_path in sorted(Path('.pm-harness/state').glob('TASK-*.json')):
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    if manifest.get('status') not in {'in_review', 'approved', 'closed'}:
+        continue
+    subprocess.run(
+        ['python3', '.pm-harness/bin/harness.py', 'plan', 'check', manifest['id']],
+        check=True,
+    )
+PY
 else
   echo "PM Harness not present in this checkout; skipping harness gates."
 fi

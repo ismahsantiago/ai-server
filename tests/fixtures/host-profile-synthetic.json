@@ -1,0 +1,203 @@
+{
+  "generated_at": "2026-01-01T00:00:00+00:00",
+  "host_profile_version": 1,
+  "infrastructure": {
+    "execution_context": {},
+    "facts": {
+      "disk.free_gb": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "GiB",
+        "value": 100.0
+      },
+      "docker.cli_present": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "bool",
+        "value": true
+      },
+      "docker.compose_version": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "text",
+        "value": "v2"
+      },
+      "docker.daemon_reachable": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "bool",
+        "value": true
+      },
+      "docker.engine_version": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "text",
+        "value": "29"
+      },
+      "docker.gpu_runtimes": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "list",
+        "value": []
+      },
+      "execution.machine_observable": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "bool",
+        "value": true
+      },
+      "memory.available_gb": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "GiB",
+        "value": 16.0
+      },
+      "memory.cgroup_limit_gb": {
+        "source": "fixture",
+        "status": "not-applicable",
+        "unit": "GiB",
+        "value": null
+      },
+      "memory.total_gb": {
+        "source": "fixture",
+        "status": "measured",
+        "unit": "GiB",
+        "value": 16.0
+      }
+    }
+  },
+  "notes": [],
+  "platform": {
+    "machine": "fixture",
+    "python_version": "3.10",
+    "supported": true,
+    "system": "FixtureOS"
+  },
+  "recommendations": {
+    "excluded_presets": [
+      {
+        "alias": "devstral-small-v25.07",
+        "basis": {
+          "disk_free_gb": 100.0,
+          "disk_required_gb": 15.95,
+          "estimated_model_gb": 14.5,
+          "footprint_gb": 17.5,
+          "kv_cache_gb_at_default_context": 1.5,
+          "runtime_buffer_gb": 1.5,
+          "usable_budget_gb": 16.0
+        },
+        "context": 4096,
+        "cpus": "6.0",
+        "mem_limit": "8g",
+        "pids_limit": 256,
+        "reason": "memory-fit",
+        "selected_profile": "medium",
+        "verdict": "NO-FIT"
+      },
+      {
+        "alias": "phi-4-14b",
+        "basis": {
+          "disk_free_gb": 100.0,
+          "disk_required_gb": 9.9,
+          "estimated_model_gb": 9.0,
+          "footprint_gb": 11.75,
+          "kv_cache_gb_at_default_context": 1.5,
+          "runtime_buffer_gb": 1.25,
+          "usable_budget_gb": 16.0
+        },
+        "context": 6144,
+        "cpus": "8.0",
+        "mem_limit": "10g",
+        "next_action": "Choose a profile/runtime envelope that covers the planning footprint before serving this preset.",
+        "pids_limit": 256,
+        "reason": "profile-envelope",
+        "selected_profile": "good",
+        "verdict": "NO-FIT"
+      }
+    ],
+    "runnable_presets": [
+      {
+        "alias": "ornith-9b",
+        "basis": {
+          "disk_free_gb": 100.0,
+          "disk_required_gb": 6.05,
+          "estimated_model_gb": 5.5,
+          "footprint_gb": 7.5,
+          "kv_cache_gb_at_default_context": 1.0,
+          "runtime_buffer_gb": 1.0,
+          "usable_budget_gb": 16.0
+        },
+        "context": 4096,
+        "cpus": "6.0",
+        "mem_limit": "8g",
+        "pids_limit": 256,
+        "selected_profile": "medium",
+        "verdict": "FIT"
+      },
+      {
+        "alias": "qwen3-coder-7b",
+        "basis": {
+          "disk_free_gb": 100.0,
+          "disk_required_gb": 5.28,
+          "estimated_model_gb": 4.8,
+          "footprint_gb": 6.8,
+          "kv_cache_gb_at_default_context": 1.0,
+          "runtime_buffer_gb": 1.0,
+          "usable_budget_gb": 16.0
+        },
+        "context": 4096,
+        "cpus": "6.0",
+        "mem_limit": "8g",
+        "pids_limit": 256,
+        "selected_profile": "medium",
+        "verdict": "FIT"
+      },
+      {
+        "alias": "smollm3-3b",
+        "basis": {
+          "disk_free_gb": 100.0,
+          "disk_required_gb": 2.2,
+          "estimated_model_gb": 2.0,
+          "footprint_gb": 3.25,
+          "kv_cache_gb_at_default_context": 0.5,
+          "runtime_buffer_gb": 0.75,
+          "usable_budget_gb": 16.0
+        },
+        "context": 2048,
+        "cpus": "4.0",
+        "mem_limit": "6g",
+        "pids_limit": 256,
+        "selected_profile": "medium-fast",
+        "verdict": "FIT"
+      }
+    ],
+    "tier": {
+      "basis": {
+        "boundaries_gb": [
+          3.25,
+          6.8,
+          7.5,
+          11.75,
+          17.5
+        ],
+        "memory.available_gb": 16.0,
+        "memory.cgroup_limit_gb": null,
+        "usable_budget_gb": 16.0
+      },
+      "confidence": "high",
+      "tier_id": "deeper-work",
+      "tier_label": "Deeper work",
+      "tier_model_status": "provisional-pending-product-signoff",
+      "tier_model_version": 1,
+      "undetermined_inputs": []
+    }
+  },
+  "software_readiness": {
+    "gaps": [],
+    "summary": {
+      "advisory": 0,
+      "blocking": 0,
+      "degraded": 0
+    }
+  }
+}

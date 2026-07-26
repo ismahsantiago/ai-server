@@ -8,8 +8,6 @@ from typing import Any
 
 from .data import load_profiles, load_setups, ordered_profile_names, setup_listing_names
 from .presets import ModelPreset, ordered_presets, resolve_preset
-from .render import build_context, render_workspace, resolve_output_path
-from .validator import validate_workspace
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -74,6 +72,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="ask",
         help="Whether to run the server after validate. Default ask.",
     )
+    doctor = subparsers.add_parser("doctor", help="Inspect host capability without changing it.")
+    doctor.add_argument("--format", choices=["text", "json"], default="text")
+    doctor.add_argument("--out", default="artifacts/host-profile.json")
+    doctor.add_argument("--no-write", action="store_true")
+    doctor.add_argument("--models-path", default=None)
     return parser
 
 
@@ -249,6 +252,7 @@ def _static_matrix_decision(
 
 
 def _matrix_preview(args: argparse.Namespace) -> int:
+    from .render import build_context
     resolved = _resolve_generation_request(
         preset_alias=args.preset,
         setup=args.setup,
@@ -318,6 +322,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "matrix":
             return _matrix_preview(args)
         elif args.command == "generate":
+            from .render import render_workspace
             resolved = _resolve_generation_request(
                 preset_alias=args.preset,
                 setup=args.setup,
@@ -352,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Generated {len(files)} files into {rel}")
             return 0
         elif args.command == "validate":
+            from .validator import validate_workspace
             errors = validate_workspace(args.generated_dir, tier=args.tier)
             if errors:
                 for error in errors:
@@ -369,7 +375,13 @@ def main(argv: list[str] | None = None) -> int:
                 print("NOT VERIFIED: runtime endpoint health or model response quality")
             return 0
 
+        elif args.command == "doctor":
+            from .doctor import run as run_doctor
+            return run_doctor(output=args.out, fmt=args.format, no_write=args.no_write, models_path=args.models_path)
+
         elif args.command == "wizard":
+            from .render import build_context, render_workspace, resolve_output_path
+            from .validator import validate_workspace
             profiles = load_profiles()
             profile_aliases = ordered_profile_names()
             profile_to_label = {p: profiles[p].get("description", "") for p in profile_aliases}

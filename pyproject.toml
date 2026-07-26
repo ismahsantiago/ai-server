@@ -7,12 +7,7 @@ name = "ai-server-generator"
 version = "0.1.0"
 description = "Generator-first CLI skeleton for local ai-server workspaces."
 requires-python = ">=3.10"
-# Private project for personal use. It carries no license because it is not
-# distributed, published, or shared; "all rights reserved" applies by default.
-# The classifier below makes an accidental PyPI upload fail rather than succeed.
-# If distribution is ever intended, a license and a third-party notice review
-# become prerequisites (see audits/ LEG-001).
-classifiers = ["Private :: Do Not Upload"]
+license = { file = "LICENSE" }
 dependencies = [
   "Jinja2==3.1.6",
   "MarkupSafe==3.0.3",

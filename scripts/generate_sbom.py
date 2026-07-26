@@ -112,7 +112,7 @@ def build_sbom() -> dict[str, object]:
                 "name": "ai-server",
                 "description": (
                     "Generator-first local AI server workspace builder. "
-                    "Private project; not distributed."
+                    "Licensed under Apache-2.0."
                 ),
             },
             "properties": [

@@ -79,7 +79,7 @@
   ],
   "metadata": {
     "component": {
-      "description": "Generator-first local AI server workspace builder. Private project; not distributed.",
+      "description": "Generator-first local AI server workspace builder. Licensed under Apache-2.0.",
       "name": "ai-server",
       "type": "application"
     },

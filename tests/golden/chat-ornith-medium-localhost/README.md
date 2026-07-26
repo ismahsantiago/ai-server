@@ -66,4 +66,16 @@ Smoke helper:
 - `scripts/validate_host.sh`
 
 
+## License
+
+`ai-server` is licensed under Apache-2.0. That license covers the generator;
+it does not cover what the generator produces. Everything in this workspace —
+`docker-compose.yml`, `.env`, the scripts, this README, and `runbook.md` — was
+generated for you and is yours to use, modify, and redistribute as you see
+fit. This project claims no rights over it.
+
+The container image and any model weights this workspace pulls or mounts are
+not covered by that license either. They carry their own upstream licenses —
+check those before you redistribute a workspace that includes them.
+
 See `runbook.md` for operations and safety notes.
