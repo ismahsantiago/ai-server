@@ -1,0 +1,73 @@
+{
+  "id": "ESC-0001",
+  "title": "PM Harness pack/engine conformance findings (ARN-001..ARN-004) require the pack owner",
+  "kind": "escalation",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0007"
+  ],
+  "artifact_paths": [
+    "escalations/pending/ESC-0001.md"
+  ],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-24T19:15:55Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T20:28:49Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director reviewing ARN escalation"
+    },
+    {
+      "ts": "2026-07-24T20:28:49Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Escalation packet prepared for Director decision"
+    },
+    {
+      "ts": "2026-07-24T20:28:50Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Presented to Director in session"
+    },
+    {
+      "ts": "2026-07-24T20:28:50Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Director deliberating on options"
+    },
+    {
+      "ts": "2026-07-24T20:28:56Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Director decision recorded; routing outcome"
+    },
+    {
+      "ts": "2026-07-24T20:28:56Z",
+      "agent": "director",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "ARN-001/002 to pack owner; ARN-003/004 risk accepted for private single-operator project"
+    },
+    {
+      "ts": "2026-07-24T20:28:56Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Escalation resolved per Director decision; moved to resolved/"
+    }
+  ]
+}

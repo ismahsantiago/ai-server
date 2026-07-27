@@ -1,0 +1,123 @@
+{
+  "schema_version": 2,
+  "_instruction": "Platform adapters. For each platform detected in the target project (or explicitly requested), the installer copies every entry of `files` (src relative to templates/v1, dst relative to the target project root, in list order) with the standard idempotent procedure, and additively merges AGENTS.pm-harness.md into `context_file` (create if missing, append after the PM-HARNESS:START marker check, never overwrite). `detect` lists the paths whose existence marks the platform as present; `always_offer` platforms are offered even when not detected. For claude, `files` forms a local skills-directory plugin named `pm` (.claude/skills/pm/ with .claude-plugin/plugin.json, commands/ and a statically shipped agents/pm-orchestrator.md); for opencode it ships the activation skill, .opencode/commands/ and a static .opencode/agents/pm-orchestrator.md with mode: primary. `agents_dir` and `agent_format` are consumed at RUNTIME (not by the installer), read from the local copy `.pm-harness/adapters/adapters.json`: when the roster is generated, the PM Orchestrator materializes one pointer agent file per roster member into `agents_dir`, using the pointer template matching `agent_format` (defined in teams/pm-orchestrator/SKILL.md; HARNESS-SPEC §7.1 — root agent gets mode: primary on opencode, everyone else mode: subagent). null means the platform has no named-subagent concept. The first entry of `files` doubles as the installed-marker the CLI checks before materializing. Unknown platforms can be added here without code changes. `models` declares each platform's model shape for SPEC §3.0/§3.2: id_format ('model' vs 'provider/model'), effort_levels (null = no effort concept), and how to discover them; consumed at runtime by the root agent's catalog sync and by `harness.py route --platform`.",
+  "platforms": {
+    "opencode": {
+      "detect": [
+        ".opencode",
+        "opencode.jsonc",
+        "opencode.json"
+      ],
+      "files": [
+        { "src": "adapters/opencode/SKILL.template.md", "dst": ".opencode/skills/pm/SKILL.md" },
+        { "src": "adapters/opencode/agents/pm-orchestrator.md", "dst": ".opencode/agents/pm-orchestrator.md" },
+        { "src": "adapters/opencode/commands/pm.md", "dst": ".opencode/commands/pm.md" },
+        { "src": "adapters/opencode/commands/pm-kickoff.md", "dst": ".opencode/commands/pm-kickoff.md" },
+        { "src": "adapters/opencode/commands/pm-standup.md", "dst": ".opencode/commands/pm-standup.md" },
+        { "src": "adapters/opencode/commands/pm-retro.md", "dst": ".opencode/commands/pm-retro.md" },
+        { "src": "adapters/opencode/commands/pm-showcase.md", "dst": ".opencode/commands/pm-showcase.md" },
+        { "src": "adapters/opencode/commands/pm-decision.md", "dst": ".opencode/commands/pm-decision.md" },
+        { "src": "adapters/opencode/commands/pm-status.md", "dst": ".opencode/commands/pm-status.md" }
+      ],
+      "context_file": "AGENTS.md",
+      "always_offer": true,
+      "agents_dir": ".opencode/agents",
+      "agent_format": "opencode",
+      "models": {
+        "id_format": "provider/model",
+        "effort_levels": [
+          "low",
+          "medium",
+          "high",
+          "max"
+        ],
+        "discovery": "enumerate configured providers/models (opencode config / models list); ids like anthropic/claude-sonnet-5"
+      }
+    },
+    "claude": {
+      "detect": [
+        ".claude",
+        "CLAUDE.md"
+      ],
+      "files": [
+        { "src": "adapters/claude/.claude-plugin/plugin.json", "dst": ".claude/skills/pm/.claude-plugin/plugin.json" },
+        { "src": "adapters/claude/SKILL.template.md", "dst": ".claude/skills/pm/SKILL.md" },
+        { "src": "adapters/claude/agents/pm-orchestrator.md", "dst": ".claude/skills/pm/agents/pm-orchestrator.md" },
+        { "src": "adapters/claude/commands/pm.md", "dst": ".claude/skills/pm/commands/pm.md" },
+        { "src": "adapters/claude/commands/kickoff.md", "dst": ".claude/skills/pm/commands/kickoff.md" },
+        { "src": "adapters/claude/commands/standup.md", "dst": ".claude/skills/pm/commands/standup.md" },
+        { "src": "adapters/claude/commands/retro.md", "dst": ".claude/skills/pm/commands/retro.md" },
+        { "src": "adapters/claude/commands/showcase.md", "dst": ".claude/skills/pm/commands/showcase.md" },
+        { "src": "adapters/claude/commands/decision.md", "dst": ".claude/skills/pm/commands/decision.md" },
+        { "src": "adapters/claude/commands/status.md", "dst": ".claude/skills/pm/commands/status.md" }
+      ],
+      "context_file": "CLAUDE.md",
+      "always_offer": true,
+      "agents_dir": ".claude/skills/pm/agents",
+      "agent_format": "claude-code",
+      "models": {
+        "id_format": "model",
+        "effort_levels": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "discovery": "session model list (/model); ids like claude-opus-4-8; effort is the session reasoning-effort setting"
+      }
+    },
+    "cursor": {
+      "detect": [
+        ".cursor",
+        ".cursorrules"
+      ],
+      "files": [
+        { "src": "adapters/cursor/pm-harness.mdc", "dst": ".cursor/rules/pm-harness.mdc" }
+      ],
+      "context_file": null,
+      "_note": "The .mdc rule doubles as context; Cursor has no AGENTS.md convention.",
+      "always_offer": false,
+      "agents_dir": null,
+      "models": {
+        "id_format": "model",
+        "effort_levels": null,
+        "discovery": "IDE model picker; best-effort, register the current session model"
+      }
+    },
+    "openclaw": {
+      "detect": [
+        ".openclaw",
+        "openclaw.json"
+      ],
+      "files": [
+        { "src": "adapters/openclaw/SKILL.template.md", "dst": ".openclaw/skills/pm-harness/SKILL.md" }
+      ],
+      "context_file": "AGENTS.md",
+      "_note": "Best-effort default following OpenClaw's AGENTS.md + skills conventions; adjust the dst if your OpenClaw workspace maps skills elsewhere.",
+      "always_offer": false,
+      "agents_dir": null,
+      "models": {
+        "id_format": "model",
+        "effort_levels": null,
+        "discovery": "workspace config; best-effort, register the current session model"
+      }
+    },
+    "hermes": {
+      "detect": [
+        ".hermes",
+        "hermes.toml"
+      ],
+      "files": [
+        { "src": "adapters/hermes/pm-harness.md", "dst": ".hermes/pm-harness.md" }
+      ],
+      "context_file": "AGENTS.md",
+      "_note": "Generic adapter (best-effort default): a plain instruction file plus the AGENTS.md merge. Adjust paths here to match your Hermes deployment; no code changes needed.",
+      "always_offer": false,
+      "agents_dir": null,
+      "models": {
+        "id_format": "model",
+        "effort_levels": null,
+        "discovery": "deployment config; best-effort, register the current session model"
+      }
+    }
+  }
+}

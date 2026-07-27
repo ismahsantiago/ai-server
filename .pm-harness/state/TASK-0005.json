@@ -1,0 +1,80 @@
+{
+  "id": "TASK-0005",
+  "title": "Repository naming proposal and human-facing usage documentation",
+  "kind": "task",
+  "owner": "product-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "docs/repo-name-suggestions.md"
+  ],
+  "artifact_checksum": "sha256:51ffcce5d8c3b3845cbcb4deb1b8d8d9f2d81f32dd9849e73488e6566ba6a842",
+  "history": [
+    {
+      "ts": "2026-07-24T04:45:06Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T04:46:46Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director requested repository naming suggestions and human-facing usage docs."
+    },
+    {
+      "ts": "2026-07-24T04:46:46Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Creative plan prepared and approved for naming + docs deliverables."
+    },
+    {
+      "ts": "2026-07-24T04:46:46Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to product-manager for naming proposal and documentation."
+    },
+    {
+      "ts": "2026-07-24T04:50:43Z",
+      "agent": "product-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Execution started for naming proposal and human-facing documentation deliverables."
+    },
+    {
+      "ts": "2026-07-24T04:54:48Z",
+      "agent": "product-manager",
+      "from": "in_progress",
+      "to": "in_progress",
+      "reason": "Resume aborted attempt and continue execution.",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-24T04:55:34Z",
+      "agent": "product-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Plan todos completed and plan check is clean; moving to review with gate evidence."
+    },
+    {
+      "ts": "2026-07-24T04:57:28Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Reviewed naming proposal and human docs; all gates passed."
+    },
+    {
+      "ts": "2026-07-24T04:57:28Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Naming suggestions and human-facing usage docs accepted."
+    }
+  ],
+  "plan_ref": "plans/TASK-0005.plan.md"
+}

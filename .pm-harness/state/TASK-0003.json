@@ -1,0 +1,74 @@
+{
+  "id": "TASK-0003",
+  "title": "Sprint 2: ai-server generator skeleton and Sprint 1 template migration",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0002"
+  ],
+  "artifact_paths": [
+    "generated/chat-medium-localhost/manifest.json"
+  ],
+  "artifact_checksum": "sha256:b7ac6f955055ebd35dfa07a553f7736f03a47a7edef1779786f93a70604b99ca",
+  "history": [
+    {
+      "ts": "2026-07-24T02:46:44Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T02:47:16Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director approved recommended generator-first implementation decisions."
+    },
+    {
+      "ts": "2026-07-24T02:47:16Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Sprint 2 implementation scope and approved plan prepared."
+    },
+    {
+      "ts": "2026-07-24T02:47:16Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to engineering-manager for generator implementation."
+    },
+    {
+      "ts": "2026-07-24T02:48:55Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Started delegated Sprint 2 generator implementation."
+    },
+    {
+      "ts": "2026-07-24T03:04:37Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Completed generator skeleton implementation, tests, and gate verification for TASK-0003."
+    },
+    {
+      "ts": "2026-07-24T03:09:45Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Reviewed implementation deliverables; gates and plan adherence verified."
+    },
+    {
+      "ts": "2026-07-24T03:09:45Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Sprint 2 generator skeleton scope accepted."
+    }
+  ],
+  "plan_ref": "plans/TASK-0003.plan.md"
+}

@@ -1,0 +1,93 @@
+{
+  "id": "TASK-0001",
+  "title": "Sprint 1 foundation: Linux Docker local AI serving baseline",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "docker-compose.yml"
+  ],
+  "artifact_checksum": "sha256:80854009269199b90d6faf4b75f42916b407e98a46061843cf51beb43a06e535",
+  "history": [
+    {
+      "ts": "2026-07-23T23:30:48Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-23T23:32:05Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director requested Sprint 1 start; task intake recorded."
+    },
+    {
+      "ts": "2026-07-23T23:32:05Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Sprint 1 scope and plan drafting completed."
+    },
+    {
+      "ts": "2026-07-23T23:32:05Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Approved plan attached; task assigned to engineering-manager for execution delegation."
+    },
+    {
+      "ts": "2026-07-23T23:35:22Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Execution started for Sprint 1 foundation setup."
+    },
+    {
+      "ts": "2026-07-23T23:39:22Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Sprint 1 foundation artifacts delivered; gates passed and plan check clean."
+    },
+    {
+      "ts": "2026-07-24T02:39:54Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "changes_requested",
+      "reason": "Director redirected Sprint 1 toward generator-first repository workflow; existing hand-authored baseline must be refactored into generated templates before final closure."
+    },
+    {
+      "ts": "2026-07-24T04:15:49Z",
+      "agent": "engineering-manager",
+      "from": "changes_requested",
+      "to": "in_progress",
+      "reason": "TASK-0001 closure execution started for generator-first alignment amendment work."
+    },
+    {
+      "ts": "2026-07-24T04:19:39Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Generator-first closure alignment completed; amendment todos checked and Gate 1 command set passed with plan check clean."
+    },
+    {
+      "ts": "2026-07-24T04:22:33Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Reviewed generator-first closure alignment changes and verification evidence; acceptance criteria met."
+    },
+    {
+      "ts": "2026-07-24T04:22:33Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Sprint 1 legacy-to-generator alignment completed and accepted."
+    }
+  ],
+  "plan_ref": "plans/TASK-0001.plan.md"
+}

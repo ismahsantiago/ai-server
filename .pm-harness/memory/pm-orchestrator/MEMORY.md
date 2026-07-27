@@ -1,0 +1,22 @@
+| id | type | scope | importance | created | tags | summary |
+|---|---|---|---|---|---|---|
+| mem-pm-orchestrator-0001 | user-preference | /ai-server/pm/pm-orchestrator | 5 | 2026-07-23 | linux, lan, docker, balanced-performance, multicapability | Director preferences for initiative Local lightweight AI model lab: host OS Linux; allow both localh |
+| mem-pm-orchestrator-0002 | decision | /ai-server/pm/pm-orchestrator | 4 | 2026-07-23 | roster, phase-b, security-ownership | Director approved initial roster. Active structure: product-manager with product-analyst; engineerin |
+| mem-pm-orchestrator-0003 | decision | /ai-server/pm/pm-orchestrator | 4 | 2026-07-23 | sprint-1, foundation, task-status | Sprint 1 initiated under TASK-0001 with approved complex plan. Engineering execution delivered Docke |
+| mem-pm-orchestrator-0004 | user-preference | /ai-server/pm/pm-orchestrator | 5 | 2026-07-24 | generator-first, repository, configuration, docs, local-lab | Director refined ai-server scope: the project should be a downloadable repository for the target Lin |
+| mem-pm-orchestrator-0005 | decision | /ai-server/pm/pm-orchestrator | 5 | 2026-07-24 | generator-first, roadmap, task-status | Generator-first strategy is now the accepted direction. TASK-0002 delivered and closed with docs/roa |
+| mem-pm-orchestrator-0006 | decision | /ai-server/pm/pm-orchestrator | 5 | 2026-07-24 | sprint-2, decision, generator, cli | Director approved the pm-orchestrator recommendation for generator implementation decisions: package |
+| mem-pm-orchestrator-0007 | decision | /ai-server/pm/pm-orchestrator | 3 | 2026-07-24 | task-0003, lan-validation, security | TASK-0003 implementation hardened LAN generation validation: --lan-allowlist is now trimmed and must |
+| mem-pm-orchestrator-0008 | decision | /ai-server/pm/pm-orchestrator | 4 | 2026-07-24 | tests, presets, matrix, task-0004 | TASK-0004 completed: generator now includes model presets for Ornith 1.0 9B, Devstral Small v25.07,  |
+| mem-pm-orchestrator-0009 | decision | /ai-server/pm/pm-orchestrator | 4 | 2026-07-24 | task-0001, closure, generator-first | TASK-0001 is closed. Sprint 1 legacy artifacts were re-labeled as compatibility/examples and the can |
+| mem-pm-orchestrator-0010 | decision | project | 5 | 2026-07-25 | posture, security, lan, product-direction | KICK-0002 (2026-07-25): the Director reversed the localhost-only posture. LAN exposure and bearer-to |
+| mem-pm-orchestrator-0011 | project-fact | project | 5 | 2026-07-25 | persona, product, constraints | KICK-0002 (2026-07-25): target user fixed as entrepreneurs, home workers, and small dev teams giving |
+| mem-pm-orchestrator-0012 | user-preference | project | 4 | 2026-07-25 | director, pace, quality | Director preference observed 2026-07-25 (KICK-0002): prefers one coherent, genuinely functional deli |
+| mem-pm-orchestrator-0013 | project-fact | project | 5 | 2026-07-25 | platforms, scope, constraints | Director, 2026-07-25 (KICK-0002 round 3): supported platforms fixed as Linux (primary, freshly forma |
+| mem-pm-orchestrator-0014 | project-fact | project | 4 | 2026-07-25 | macos, metal, docker, runtime, risk | Open technical risk raised 2026-07-25 and routed to TASK-0008 (verify) and TASK-0009 (evaluate): on  |
+| mem-pm-orchestrator-0015 | project-fact | project | 3 | 2026-07-25 | hygiene, ci, manifests, debt | Verified 2026-07-25: scripts/ci.sh line 117 pins 'plan check TASK-0007', which exits 1 with '13 unch |
+| mem-pm-orchestrator-0016 | decision | project | 5 | 2026-07-25 | legal, license, distribution, apache-2.0 | Director decision 2026-07-25 (ESC-0002, resolved): ai-server is licensed Apache-2.0. Origin: the rep |
+| mem-pm-orchestrator-0017 | project-fact | project | 5 | 2026-07-26 | macos, phase-i, packaging, blocker, python | Measured by TASK-0008 on 2026-07-25 and carried to Phase I: macOS is blocked on BOTH inspection path |
+| mem-pm-orchestrator-0018 | decision | project | 4 | 2026-07-26 | engineering-principle, honesty, api-design | Engineering principle ratified 2026-07-25 (TASK-0008), generalizes beyond that task: when a value is |
+| mem-pm-orchestrator-0019 | decision | project | 3 | 2026-07-26 | concurrency, file-ownership, process | Ruling 2026-07-25 for concurrent tasks in one tree (TASK-0008, TASK-0009, TASK-0011 live simultaneou |
+| mem-pm-orchestrator-0020 | decision | project | 4 | 2026-07-26 | license, apache-2.0, task-0011 | TASK-0011 closed on 2026-07-26: Apache-2.0 licensing decision applied and verified. Evidence: LICENS |

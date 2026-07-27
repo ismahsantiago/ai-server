@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pm-harness.dev/schemas/split-manifest.v1.json",
+  "title": "PM Harness split manifest (v1)",
+  "description": "Declarative configuration for the private-outer / public-inner layout. Lives at .pm-harness/split.manifest.json in the outer repository. Consumed by `harness.py private-split` subcommands.",
+  "type": "object",
+  "required": ["version", "layout", "inner_dir", "move_to_outer", "keep_in_inner", "never_touch", "docs_policy"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "const": 1 },
+    "layout": { "type": "string", "const": "private-outer-v1" },
+    "inner_dir": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^/\\\\]+$",
+      "not": { "enum": [".", ".."] },
+      "description": "Simple directory name (no slashes) of the public inner repo, relative to the outer root."
+    },
+    "move_to_outer": {
+      "type": "object",
+      "required": ["dirs", "files", "globs"],
+      "properties": {
+        "dirs":  { "type": "array", "items": { "type": "string" } },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "globs": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "keep_in_inner": {
+      "type": "object",
+      "required": ["files"],
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string" } },
+        "note":  { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "never_touch": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "docs_policy": {
+      "type": "object",
+      "required": ["on_fresh_install", "on_migration"],
+      "properties": {
+        "on_fresh_install": {
+          "type": "string",
+          "enum": ["create_in_outer", "skip"]
+        },
+        "on_migration": {
+          "type": "string",
+          "enum": [
+            "keep_in_outer_ask_which_move_to_inner",
+            "keep_in_outer",
+            "move_all_to_inner"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

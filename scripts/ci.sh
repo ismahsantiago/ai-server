@@ -110,9 +110,9 @@ while IFS= read -r -d '' script; do
   shellcheck "${script}"
 done < <(find scripts "${OUTPUT_DIR}/scripts" -type f -name '*.sh' -print0)
 
-# The PM Harness lives entirely under .pm-harness/, which is intentionally not
-# committed (project-isolation invariant). It is present in a developer checkout
-# but absent on a clean CI clone, so run its gates only when it exists.
+# The same-project PM Harness is committed under .pm-harness/ and is expected in
+# normal clean clones. Keep the presence check for source archives and legacy
+# checkouts that intentionally omit optional governance metadata.
 if [ -f .pm-harness/bin/harness.py ]; then
   python3 .pm-harness/bin/harness.py validate
   python3 .pm-harness/bin/harness.py agents check

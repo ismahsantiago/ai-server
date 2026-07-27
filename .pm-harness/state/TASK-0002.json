@@ -1,0 +1,72 @@
+{
+  "id": "TASK-0002",
+  "title": "Generator-first roadmap and configuration architecture plan",
+  "kind": "task",
+  "owner": "product-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "docs/roadmap/generator-first-roadmap.md"
+  ],
+  "artifact_checksum": "sha256:47b2e46c08d837e3ac60d7dc0a1ac94a17c56c91d1140993b5f464a1b5df2b3e",
+  "history": [
+    {
+      "ts": "2026-07-24T02:33:30Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T02:34:12Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director refined scope to generator-first repository workflow."
+    },
+    {
+      "ts": "2026-07-24T02:34:12Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Strategic plan task and approved plan prepared."
+    },
+    {
+      "ts": "2026-07-24T02:34:13Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to product-manager for generator-first plan drafting."
+    },
+    {
+      "ts": "2026-07-24T02:35:33Z",
+      "agent": "product-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Drafting generator-first roadmap."
+    },
+    {
+      "ts": "2026-07-24T02:38:41Z",
+      "agent": "product-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Generator-first roadmap delivered."
+    },
+    {
+      "ts": "2026-07-24T02:39:47Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Generator-first roadmap reviewed; gates and changelog check passed."
+    },
+    {
+      "ts": "2026-07-24T02:39:47Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Strategic planning deliverable accepted and reported to Director."
+    }
+  ],
+  "plan_ref": "plans/TASK-0002.plan.md"
+}

@@ -1,0 +1,80 @@
+{
+  "id": "TASK-0010",
+  "title": "Tier model ownership: define hardware tiers and the tier to preset/profile/context mapping",
+  "kind": "task",
+  "owner": "product-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0008"
+  ],
+  "artifact_paths": [],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-25T14:30:20Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-25T14:32:05Z",
+      "agent": "product-manager",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "PM picked up tier-model ownership; read KICK-0002 in full, GATES.md, SPEC 3/6/7/9/11/12, presets.py, profiles/*.json, docs/preset-matrix.md, cli._static_matrix_decision, and TASK-0008's provisional tiering design"
+    },
+    {
+      "ts": "2026-07-25T14:32:05Z",
+      "agent": "product-manager",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Scope analysed: five product rulings required (tier definitions, tier->preset/profile/context mapping principle, honesty posture, reduced-confidence semantics, macOS acceleration meaning). Delegation target: product-analyst (declared role: use-case framing + capability matrices)"
+    },
+    {
+      "ts": "2026-07-25T14:32:05Z",
+      "agent": "product-manager",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Complex category: full SPEC 12.3 plan required, drafted by executor, reviewed by PM with plan-review, approved by pm-orchestrator (owner is a manager)"
+    },
+    {
+      "ts": "2026-07-26T00:13:29Z",
+      "agent": "product-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Plan approved by pm-orchestrator; post-approval constraints recorded as an append-only amendment (confirmed reserve double-count with its operator-impact table, todo 7 -> todo 9 sequencing dependency, verdict routing rule, tier_label sign-off line, TASK-0011 concurrency note). Delegating execution to product-analyst."
+    },
+    {
+      "ts": "2026-07-26T04:17:59Z",
+      "agent": "product-analyst",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "TASK-0010 delivery complete: authoritative tier product definition, ADJUSTED reserve-correction specification routed to TASK-0008 amendment, Wiki/changelog/memory evidence, all applicable gates and baseline guard passed. Awaiting product-manager review; no engineering code changed."
+    },
+    {
+      "ts": "2026-07-26T04:18:08Z",
+      "agent": "product-analyst",
+      "from": "in_review",
+      "to": "in_progress",
+      "reason": "Correction: todo 7 literal absolute-cleanliness acceptance criterion is blocked by pre-existing concurrent ai_server_generator changes; awaiting pm-orchestrator-approved plan amendment.",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-26T04:20:18Z",
+      "agent": "product-manager",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Manager integration review passed: pm-orchestrator-approved baseline-relative Todo 7 amendment is recorded; all 20 todos and all applicable gates pass; verified documentation, Wiki, changelog, and no engineering-tree attribution. ADJUSTED specification routed to pm-orchestrator for engineering-manager as a TASK-0008 amendment; not applied by product."
+    },
+    {
+      "ts": "2026-07-26T04:20:18Z",
+      "agent": "product-manager",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Product delivery accepted after valid in_review -> approved path. Final tier definition, links, changelog, Wiki, two product-analyst decision notes, baseline guard, and gate evidence are complete. Non-code follow-up remains routed as the TASK-0008 amendment request."
+    }
+  ],
+  "plan_ref": "plans/TASK-0010.plan.md"
+}

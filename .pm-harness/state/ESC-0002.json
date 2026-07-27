@@ -1,0 +1,71 @@
+{
+  "id": "ESC-0002",
+  "title": "Licensing and distribution decision: repo declares itself private/unlicensed while the approved product is clone-and-run",
+  "kind": "escalation",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0007"
+  ],
+  "artifact_paths": [],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-25T23:31:04Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    },
+    {
+      "ts": "2026-07-25T23:49:39Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Director decided Apache-2.0 in session 2026-07-25; escalation resolved and moved to escalations/resolved/"
+    }
+  ]
+}

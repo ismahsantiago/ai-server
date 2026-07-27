@@ -16,6 +16,10 @@ released `## [x.y.z]` section.
 
 ### Added
 
+- TASK-0012: Added a portable, same-project AI-instance handoff with minimal Claude and
+  OpenCode routing sources, governed PM Harness context, clean-clone bootstrap,
+  explicit evidence boundaries, and a reproducible operational-learning
+  capture contract for the intended server.
 - TASK-0008: Added `doctor`, a non-invasive host inspection command that writes
   `artifacts/host-profile.json` by default, reports operator-actionable
   software-readiness gaps, and keeps measured infrastructure facts separate

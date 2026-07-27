@@ -1,0 +1,77 @@
+{
+  "id": "TASK-0006",
+  "title": "Product acceptance and documentation audit against approved scope",
+  "kind": "task",
+  "owner": "product-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0001",
+    "TASK-0002",
+    "TASK-0003",
+    "TASK-0004",
+    "TASK-0005"
+  ],
+  "artifact_paths": [
+    "audits"
+  ],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director requested review of pending work and audit against prior requests."
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Product acceptance audit scope classified and routed."
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to product-manager to draft the full audit plan."
+    },
+    {
+      "ts": "2026-07-24T15:37:26Z",
+      "agent": "product-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Complex product acceptance plan reviewed and approved by pm-orchestrator; evidence reconciliation may begin."
+    },
+    {
+      "ts": "2026-07-26T23:57:31Z",
+      "agent": "product-analyst",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Post-integration product acceptance reconciled against closed TASK-0007; all approved gates pass, LAN remains fail-closed, and real GGUF runtime evidence remains explicitly not-run."
+    },
+    {
+      "ts": "2026-07-26T23:59:02Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Superior acceptance review passed: 7/7 plan criteria, 97 tests, generator/validation and governance gates green; real GGUF runtime and future scope remain explicitly non-delivered."
+    },
+    {
+      "ts": "2026-07-26T23:59:02Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Product acceptance closed with resolved repository-local findings, accepted limitations, roadmap separation, and no unsupported runtime claims."
+    }
+  ]
+}

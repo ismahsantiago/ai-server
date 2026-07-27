@@ -195,6 +195,7 @@ compatibility/examples. Prefer generated equivalents under
 
 ## Where to go next
 
+- Next-instance server handoff: `docs/next-instance-server-handoff.md`
 - Human operations guide: `docs/human-guide.md`
 - Repository naming options: `docs/repo-name-suggestions.md`
 - Preset matrix details: `docs/preset-matrix.md`
@@ -254,8 +255,9 @@ the live checks below.
    python -m ai_server_generator validate "$WORKSPACE" --tier host
    ```
 
-   Review host blockers and the derived `FIT`/`NO-FIT` guidance. A `FIT`
-   recommendation is not a performance guarantee.
+   Review host blockers and the derived `FIT`/`NO-FIT` guidance. This is host
+   evidence, not runtime evidence; a `FIT` recommendation is not a performance
+   guarantee.
 
 4. Start and collect live evidence:
 
@@ -270,9 +272,11 @@ the live checks below.
      -d '{"model":"local","messages":[{"role":"user","content":"Reply with: runtime check passed"}],"max_tokens":64}'
    ```
 
-   Minimum success means a healthy container, a passing runtime tier, a
-   successful smoke script, and a coherent HTTP 200 response. Retain the host
-   profile, model SHA-256, resolved image digest, Compose logs, and benchmark
+   Minimum runtime success means a healthy container, a passing runtime tier, a
+   successful smoke script, and a coherent HTTP 200 response. This checklist
+   describes evidence to collect on the server; it does not claim those checks
+   have already run. Retain only sanitized host profile data, the model
+   basename and SHA-256, resolved image digest, Compose logs, and benchmark
    output as evidence.
 
 5. Stop the workspace:

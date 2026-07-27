@@ -1,0 +1,95 @@
+{
+  "schema_version": "0",
+  "id": "pm",
+  "name": "PM Harness",
+  "version": "2.6.0",
+  "engine_version_required": ">=2.0.0 <3.0.0",
+  "language": "en",
+  "locale": "locale/en.json",
+  "root_dir": ".pm-harness",
+  "root_agent": "pm-orchestrator",
+  "director_title": "Director",
+  "spec_file": "HARNESS-SPEC.md",
+  "cli_name": "harness.py",
+  "project_json": "harness.json",
+  "executive_summary": "executive-summary.md",
+  "unit_kinds": [],
+  "categories": {
+    "trivial": {
+      "label": "trivial",
+      "examples": [
+        "renames",
+        "one-liners",
+        "formatting",
+        "status reads"
+      ]
+    },
+    "routine": {
+      "label": "routine",
+      "examples": [
+        "well-specified implementation with known patterns"
+      ]
+    },
+    "complex": {
+      "label": "complex",
+      "examples": [
+        "multi-file changes",
+        "tricky logic",
+        "debugging"
+      ]
+    },
+    "strategic": {
+      "label": "strategic",
+      "examples": [
+        "architecture",
+        "trade-offs",
+        "roadmap",
+        "risk"
+      ]
+    },
+    "creative": {
+      "label": "creative",
+      "examples": [
+        "naming",
+        "copy",
+        "UX flows",
+        "novel design"
+      ]
+    },
+    "research": {
+      "label": "research",
+      "examples": [
+        "doc lookup",
+        "comparisons",
+        "summarization of sources"
+      ]
+    }
+  },
+  "ceremonies": [],
+  "cli_extensions": [],
+  "engine_modules": [
+    "private-split"
+  ],
+  "teams_catalog": "root/teams/pm-orchestrator",
+  "skills": [],
+  "root_seed": "root",
+  "guardrails": {
+    "spec_section": "spec/GUARDRAILS.md",
+    "always_escalate": []
+  },
+  "layout": [
+    {
+      "path": ".github",
+      "seed": "github-seed"
+    }
+  ],
+  "domain_spec": "spec/DOMAIN-SPEC.md",
+  "owned": [
+    "harness.json",
+    "model-router.json",
+    "wiki/INDEX.md",
+    "standards/GATES.md",
+    "standards/IMPROVEMENT.md",
+    "CHANGELOG.seed.md"
+  ]
+}

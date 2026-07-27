@@ -1,0 +1,74 @@
+{
+  "id": "TASK-0004",
+  "title": "Model scenario matrix and shorthand launch presets",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0003"
+  ],
+  "artifact_paths": [
+    "CHANGELOG.md"
+  ],
+  "artifact_checksum": "sha256:6af9d87c1e796f8bdd2f4acc22159a5c2eaaec6027ed8fdd168bba0cac8f7c29",
+  "history": [
+    {
+      "ts": "2026-07-24T03:39:24Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T03:41:56Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director requested stronger test-driven scenario matrix and shorthand config commands."
+    },
+    {
+      "ts": "2026-07-24T03:41:56Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Complex plan prepared and approved for scenario matrix + shorthand mode."
+    },
+    {
+      "ts": "2026-07-24T03:41:56Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to engineering-manager for implementation and testing."
+    },
+    {
+      "ts": "2026-07-24T03:45:52Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Implementation started for model scenario matrix, shorthand presets, and workflow scripts."
+    },
+    {
+      "ts": "2026-07-24T03:56:28Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Implementation complete, tests and required gates passed, ready for review."
+    },
+    {
+      "ts": "2026-07-24T04:01:41Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Reviewed model scenario matrix, shorthand presets, tests, and gates; all acceptance criteria met."
+    },
+    {
+      "ts": "2026-07-24T04:01:41Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "TASK-0004 accepted and completed with automated test evidence."
+    }
+  ],
+  "plan_ref": "plans/TASK-0004.plan.md"
+}

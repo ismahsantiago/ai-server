@@ -1,0 +1,72 @@
+{
+  "id": "TASK-0009",
+  "title": "Phase R: runtime decision — llama.cpp vs Docker Model Runner vs Ollama for a reused-laptop LAN server",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "docs/runtime-decision-phase-r.md"
+  ],
+  "artifact_checksum": "sha256:0c0a16dae1e02f9a4535d3c29c0615a2dfb4e7518383604a17d91c269534c481",
+  "history": [
+    {
+      "ts": "2026-07-25T14:07:27Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-25T14:09:25Z",
+      "agent": "engineering-manager",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "EM picked up Phase R; reading kickoff KICK-0002 and gates"
+    },
+    {
+      "ts": "2026-07-25T14:09:25Z",
+      "agent": "engineering-manager",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Scoping complete: 3 options x 8 criteria, ml-systems-engineer executes, security-engineer blocking review"
+    },
+    {
+      "ts": "2026-07-25T14:09:25Z",
+      "agent": "engineering-manager",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Delegating full research plan draft to ml-systems-engineer (SPEC 12.3: research = full plan)"
+    },
+    {
+      "ts": "2026-07-25T14:22:29Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Plan approved by pm-orchestrator; delegating hands-on evaluation to ml-systems-engineer"
+    },
+    {
+      "ts": "2026-07-26T02:04:13Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Phase R research deliverable, plan adherence, documentation gates, and blocking security-engineer review completed; security verdict APPROVED with Phase N conditions recorded."
+    },
+    {
+      "ts": "2026-07-26T02:04:25Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Reviewed Phase R decision document, completed plan, security-engineer APPROVED verdict, checksum, and all gates."
+    },
+    {
+      "ts": "2026-07-26T02:04:25Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Phase R completed: evidence-based runtime recommendation delivered and accepted with explicit Phase N security conditions."
+    }
+  ],
+  "plan_ref": "plans/TASK-0009.plan.md"
+}

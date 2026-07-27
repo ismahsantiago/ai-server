@@ -1,0 +1,67 @@
+{
+  "id": "TASK-0012",
+  "title": "Prepare portable cross-instance AI handoff and governed project context",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "in_review",
+  "depends_on": [
+    "TASK-0006",
+    "TASK-0007"
+  ],
+  "artifact_paths": [
+    ".pm-harness",
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".claude",
+    ".opencode",
+    "docs",
+    "docs/next-instance-server-handoff.md"
+  ],
+  "plan_ref": "plans/TASK-0012.plan.md",
+  "artifact_checksum": "sha256:fa54e4f2ff0a52ae81ab7977f0aa40295f7ae3c48329a8fbd0f5de0040099311",
+  "history": [
+    {
+      "ts": "2026-07-27T00:47:23Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-27T00:47:23Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director approved KICK-0003 for the cross-instance server deployment experiment."
+    },
+    {
+      "ts": "2026-07-27T00:47:23Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Portability, security, platform-adapter, documentation, and clean-checkout scope classified as complex engineering work."
+    },
+    {
+      "ts": "2026-07-27T00:47:23Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to engineering-manager to draft the full governed plan before execution."
+    },
+    {
+      "ts": "2026-07-27T00:52:52Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Complex portability plan passed pm-orchestrator plan-review: objective and 11 todos are complete, atomic, testable, scoped, reversible, and all open questions are owned."
+    },
+    {
+      "ts": "2026-07-27T01:15:07Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Portable same-project harness and native AI handoff implemented; independent security review approved; clean-index and no-local clone checks pass; full CI passes with 97 tests and 84% coverage."
+    }
+  ]
+}

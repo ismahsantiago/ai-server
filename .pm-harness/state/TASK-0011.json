@@ -1,0 +1,90 @@
+{
+  "id": "TASK-0011",
+  "title": "Apply Apache-2.0 licensing decision (ESC-0002): LICENSE, pyproject metadata, distribution language sweep, generated-workspace license statement",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "ESC-0002"
+  ],
+  "artifact_paths": [
+    "LICENSE"
+  ],
+  "artifact_checksum": "sha256:f9299ed304e7c820cd150a881fe2cc698d8dce23dfe02e81194c0313092398f0",
+  "history": [
+    {
+      "ts": "2026-07-25T23:49:51Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-26T00:03:39Z",
+      "agent": "engineering-manager",
+      "from": "untouched",
+      "to": "started",
+      "reason": "EM picked up; routine plan pre-approved by pm-orchestrator",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-26T00:03:50Z",
+      "agent": "engineering-manager",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "EM triaged TASK-0011 against ESC-0002"
+    },
+    {
+      "ts": "2026-07-26T00:03:50Z",
+      "agent": "engineering-manager",
+      "from": "touched",
+      "to": "started",
+      "reason": "Routine plan written and pre-approved by pm-orchestrator",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-26T00:04:00Z",
+      "agent": "engineering-manager",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Scope confirmed against ESC-0002; plan drafted"
+    },
+    {
+      "ts": "2026-07-26T00:04:00Z",
+      "agent": "engineering-manager",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Routine plan pre-approved by pm-orchestrator"
+    },
+    {
+      "ts": "2026-07-26T00:04:01Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Delegating implementation to ml-platform-engineer"
+    },
+    {
+      "ts": "2026-07-26T01:24:11Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Gate 1 passed after CI plan gate was corrected to check the task under integration"
+    },
+    {
+      "ts": "2026-07-26T01:24:11Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Verified Apache-2.0 licensing task gates passed"
+    },
+    {
+      "ts": "2026-07-26T01:24:11Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Apache-2.0 licensing task complete and verified"
+    }
+  ],
+  "plan_ref": "plans/TASK-0011.plan.md"
+}

@@ -1,0 +1,89 @@
+{
+  "id": "ESC-0003",
+  "title": "Tier recommendation contract: default profiles do not fit the corrected product footprint",
+  "kind": "escalation",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0008"
+  ],
+  "artifact_paths": [
+    "escalations/pending/ESC-0003.md"
+  ],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-26T04:22:40Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-26T04:22:44Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Engineering compatibility review found a cross-team contract conflict requiring Director policy choice."
+    },
+    {
+      "ts": "2026-07-26T04:22:44Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Prepared Director escalation with quantified product and implementation options."
+    },
+    {
+      "ts": "2026-07-26T04:22:44Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Escalation artifact drafting started."
+    },
+    {
+      "ts": "2026-07-26T04:23:07Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_review",
+      "reason": "Director escalation drafted with three scoped options and a recommendation; awaiting session decision.",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-26T04:23:11Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Director escalation is ready in the session channel and awaits a decision."
+    },
+    {
+      "ts": "2026-07-26T15:35:11Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "closed",
+      "reason": "Director approved Option 2 in session; TASK-0008 amendment records the bounded implementation contract.",
+      "rejected": true
+    },
+    {
+      "ts": "2026-07-26T15:35:16Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Director decision appended and escalation moved to resolved; verifying the governed TASK-0008 amendment."
+    },
+    {
+      "ts": "2026-07-26T15:35:16Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Director-approved Option 2 and plan amendment verified."
+    },
+    {
+      "ts": "2026-07-26T15:35:16Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Escalation resolved; implementation is tracked inside TASK-0008."
+    }
+  ]
+}

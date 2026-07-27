@@ -1,0 +1,78 @@
+{
+  "id": "TASK-0007",
+  "title": "Independent technical security and operations audit of delivered ai-server",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [
+    "TASK-0001",
+    "TASK-0002",
+    "TASK-0003",
+    "TASK-0004",
+    "TASK-0005"
+  ],
+  "artifact_paths": [
+    "audits",
+    "audits/audit_opencode_default_gpt-5_25-07-2026_20h23m/remediation.md"
+  ],
+  "artifact_checksum": "sha256:59ea6dea628bf7470f332acb2ec1507e1be98f916e7d5255756de9779f5efa46",
+  "history": [
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Director requested a fresh technical audit and remediation of actionable findings."
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Technical, security, performance, DevOps, and harness audit scope classified and routed."
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Assigned to engineering-manager to draft the full audit plan."
+    },
+    {
+      "ts": "2026-07-24T15:35:43Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Complex audit/remediation plan reviewed and approved by pm-orchestrator; role-split execution may begin."
+    },
+    {
+      "ts": "2026-07-26T23:52:07Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "All 25 findings reconciled; 97 tests, 84% coverage, locked dependency audit, harness/wiki/changelog/plan gates and independent security review pass; external runtime and scope items remain explicitly qualified."
+    },
+    {
+      "ts": "2026-07-26T23:53:31Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Superior review accepted: approved plan complete, independent security review APPROVED, 97 tests and full locked-environment CI green; external GGUF/LAN/legal/Codex items are explicitly non-delivered."
+    },
+    {
+      "ts": "2026-07-26T23:53:31Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Technical audit and all repository-local remediation closed with reconciled ledger, green gates, and honest external runtime/scope limitations."
+    }
+  ]
+}

@@ -1,0 +1,532 @@
+{
+  "schema_version": 3,
+  "resolution_order": [
+    "director_overrides",
+    "user_overrides",
+    "category_default_fuzzy",
+    "fallback_chain",
+    "system_default"
+  ],
+  "categories": {
+    "trivial": {
+      "preferred": "fast-cheap",
+      "fallbacks": [
+        "balanced"
+      ],
+      "reason": "renames, one-liners, formatting, status reads",
+      "effort": "low"
+    },
+    "routine": {
+      "preferred": "balanced",
+      "fallbacks": [
+        "fast-cheap",
+        "frontier"
+      ],
+      "reason": "well-specified implementation with known patterns",
+      "effort": "medium"
+    },
+    "complex": {
+      "preferred": "frontier",
+      "fallbacks": [
+        "balanced"
+      ],
+      "reason": "multi-file changes, tricky logic, debugging",
+      "effort": "high"
+    },
+    "strategic": {
+      "preferred": "frontier",
+      "fallbacks": [
+        "balanced"
+      ],
+      "reason": "architecture, trade-offs, roadmap, risk",
+      "effort": "high"
+    },
+    "creative": {
+      "preferred": "frontier",
+      "fallbacks": [
+        "balanced"
+      ],
+      "reason": "naming, copy, UX flows, novel design",
+      "effort": "medium"
+    },
+    "research": {
+      "preferred": "balanced",
+      "fallbacks": [
+        "frontier",
+        "fast-cheap"
+      ],
+      "reason": "doc lookup, comparisons, summarization of sources",
+      "effort": "medium"
+    }
+  },
+  "alias_resolution": {
+    "_instruction": "Fuzzy-match: resolve an alias to the first model in available_models whose id contains (case-insensitive) any hint, in hint order. If none match, walk the category fallback chain, then system_default.",
+    "fast-cheap": [
+      "haiku",
+      "mini",
+      "flash",
+      "lite"
+    ],
+    "balanced": [
+      "sonnet",
+      "gpt-5",
+      "pro",
+      "medium"
+    ],
+    "frontier": [
+      "opus",
+      "ultra",
+      "o1",
+      "max",
+      "fable"
+    ]
+  },
+  "available_models": [
+    "gpt-5"
+  ],
+  "_available_models_instruction": "Dynamic model catalog. At session start (or when the platform's model list changes) the root agent syncs it: `python3 .pm-harness/bin/harness.py models set \"<id1>,<id2>,...\"` with the model ids actually available in the current session/platform. Every `route` resolution fuzzy-matches against this list.",
+  "director_overrides": {},
+  "user_overrides": {},
+  "system_default": "session-current-model",
+  "provenance_log": [
+    {
+      "ts": "2026-07-23T23:30:55Z",
+      "task_id": "TASK-0001",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-23T23:35:29Z",
+      "task_id": "TASK-0001",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T02:33:30Z",
+      "task_id": "TASK-0002",
+      "category": "strategic",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T02:46:44Z",
+      "task_id": "TASK-0003",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T03:39:24Z",
+      "task_id": "TASK-0004",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T04:11:06Z",
+      "task_id": "TASK-0001",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T04:45:06Z",
+      "task_id": "TASK-0005",
+      "category": "creative",
+      "requested": "frontier",
+      "resolved": "azure/gpt-5.3-codex",
+      "provider": "azure",
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T15:30:24Z",
+      "task_id": "TASK-0006",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-24T15:30:41Z",
+      "task_id": "TASK-0007",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-25T14:07:27Z",
+      "task_id": "TASK-0008",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "claude-opus-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier"
+      ],
+      "source": "category-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-25T14:07:27Z",
+      "task_id": "TASK-0009",
+      "category": "research",
+      "requested": "balanced",
+      "resolved": "claude-sonnet-5",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced"
+      ],
+      "source": "category-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-25T14:30:20Z",
+      "task_id": "TASK-0010",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "claude-opus-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier"
+      ],
+      "source": "category-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-25T23:49:51Z",
+      "task_id": "TASK-0011",
+      "category": "routine",
+      "requested": "balanced",
+      "resolved": "claude-sonnet-5",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced"
+      ],
+      "source": "category-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T01:11:09Z",
+      "task_id": "TASK-0009",
+      "category": "research",
+      "requested": "balanced",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced",
+        "frontier",
+        "fast-cheap"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T01:11:09Z",
+      "task_id": "TASK-0011",
+      "category": "routine",
+      "requested": "balanced",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced",
+        "fast-cheap",
+        "frontier"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T01:13:05Z",
+      "task_id": "TASK-0011",
+      "category": "routine",
+      "requested": "balanced",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced",
+        "fast-cheap",
+        "frontier"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T01:13:05Z",
+      "task_id": "TASK-0009",
+      "category": "research",
+      "requested": "balanced",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "medium",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "balanced",
+        "frontier",
+        "fast-cheap"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T02:02:03Z",
+      "task_id": "TASK-0009",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T02:22:10Z",
+      "task_id": "TASK-0007",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "session-current-model",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "system-default",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T04:09:05Z",
+      "task_id": "TASK-0010",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5.6",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T04:09:45Z",
+      "task_id": "TASK-0010",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5.6",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T04:20:08Z",
+      "task_id": "TASK-0008",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5.6",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T15:35:33Z",
+      "task_id": "TASK-0008",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5.6",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T23:36:34Z",
+      "task_id": "TASK-0007",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T23:36:34Z",
+      "task_id": "TASK-0006",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-26T23:37:34Z",
+      "task_id": "TASK-0007",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    },
+    {
+      "ts": "2026-07-27T00:47:14Z",
+      "task_id": "TASK-0012",
+      "category": "complex",
+      "requested": "frontier",
+      "resolved": "gpt-5",
+      "provider": null,
+      "effort": "high",
+      "effort_source": "category-default",
+      "chain_tried": [
+        "frontier",
+        "balanced"
+      ],
+      "source": "fallback",
+      "estimated_cost_tier": null
+    }
+  ],
+  "effort_ladder": [
+    "low",
+    "medium",
+    "high",
+    "max"
+  ],
+  "_effort_instruction": "Second routing dimension (SPEC §3.2). Per-category default effort; director_overrides/user_overrides values may be either an alias string (model only) or an object {\"model\": <alias>, \"effort\": <level>}. `route --platform <name>` clamps the level to the platform's models.effort_levels from adapters/adapters.json (null -> no effort concept)."
+}

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "spec": "HARNESS-SPEC.md",
+  "installed_at": "2026-07-23T23:01:32Z",
+  "project": {
+    "name": "ai-server",
+    "domain": "local lightweight AI model serving and fine-tuning lab",
+    "tech_stack": [
+      "Python (planned)",
+      "Local inference runtimes (planned)",
+      "OpenAI-compatible local API (planned)"
+    ],
+    "analyzed_at": "2026-07-23T23:10:00Z"
+  },
+  "roster": [
+    {
+      "manager": "product-manager",
+      "role": "product management",
+      "delegate_when": "Scope or prioritize capabilities, define acceptance criteria, or evaluate value/quality trade-offs.",
+      "not_for": "Low-level implementation, infrastructure setup, or security hardening execution.",
+      "active": true,
+      "agents": [
+        {
+          "name": "product-analyst",
+          "role": "product-analyst",
+          "active": true
+        }
+      ]
+    },
+    {
+      "manager": "engineering-manager",
+      "role": "engineering",
+      "delegate_when": "Implement serving/tuning platform work, model integration, automation, and security controls.",
+      "not_for": "Director-level strategic pivots, budget approvals, or business policy changes.",
+      "active": true,
+      "agents": [
+        {
+          "name": "ml-systems-engineer",
+          "role": "ml-systems-engineer",
+          "active": true
+        },
+        {
+          "name": "ml-platform-engineer",
+          "role": "ml-platform-engineer",
+          "active": true
+        },
+        {
+          "name": "ux-dev",
+          "role": "ux-dev",
+          "active": true
+        },
+        {
+          "name": "security-engineer",
+          "role": "security-engineer",
+          "active": true
+        }
+      ]
+    }
+  ],
+  "autonomy": "guided",
+  "kickoffs": [
+    {
+      "id": "KICK-0001",
+      "initiative": "Local lightweight AI model lab",
+      "created": "2026-07-23T23:06:09Z",
+      "created_by": "pm-orchestrator",
+      "status": "approved",
+      "approved_by": "director",
+      "approved_at": "2026-07-23T23:14:09Z",
+      "ceremony": "ceremonies/2026-07-23-kickoff-KICK-0001.md"
+    },
+    {
+      "id": "KICK-0002",
+      "initiative": "Docker-native minimal-footprint refactor",
+      "created": "2026-07-25T13:27:04Z",
+      "created_by": "pm-orchestrator",
+      "status": "approved",
+      "approved_by": "director",
+      "approved_at": "2026-07-25T14:07:13Z",
+      "ceremony": "ceremonies/2026-07-25-kickoff-KICK-0002.md"
+    },
+    {
+      "id": "KICK-0003",
+      "initiative": "Cross-instance server deployment and shared AI operational learning",
+      "created": "2026-07-27T00:42:23Z",
+      "created_by": "pm-orchestrator",
+      "status": "approved",
+      "approved_by": "director",
+      "approved_at": "2026-07-27T00:47:13Z",
+      "ceremony": "ceremonies/2026-07-27-kickoff-KICK-0003.md"
+    }
+  ],
+  "changelog": [
+    {
+      "ts": "2026-07-23T23:01:32Z",
+      "actor": "pm-harness-installer",
+      "change": "skeleton scaffolded (v1)",
+      "approved_by": null
+    },
+    {
+      "ts": "2026-07-23T23:10:00Z",
+      "actor": "pm-orchestrator",
+      "change": "phase-a domain profile initialized from Director brief",
+      "approved_by": null
+    },
+    {
+      "ts": "2026-07-23T23:14:09Z",
+      "actor": "director",
+      "change": "kickoff KICK-0001 approved: Local lightweight AI model lab",
+      "approved_by": "director"
+    },
+    {
+      "ts": "2026-07-23T23:18:00Z",
+      "actor": "pm-orchestrator",
+      "change": "phase-b roster generated: product + engineering managers; design merged into engineering as ux-dev for prototype stage; security ownership merged into engineering as security-engineer (not dropped); data/support managers deferred until telemetry/users justify standalone areas",
+      "approved_by": "director"
+    },
+    {
+      "ts": "2026-07-25T14:07:13Z",
+      "actor": "director",
+      "change": "kickoff KICK-0002 approved: Docker-native minimal-footprint refactor",
+      "approved_by": "director"
+    },
+    {
+      "ts": "2026-07-27T00:47:13Z",
+      "actor": "director",
+      "change": "kickoff KICK-0003 approved: Cross-instance server deployment and shared AI operational learning",
+      "approved_by": "director"
+    }
+  ]
+}

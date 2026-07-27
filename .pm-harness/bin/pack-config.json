@@ -1,0 +1,11 @@
+{
+  "cli_name": "harness.py",
+  "director": "Director",
+  "kinds": {},
+  "name": "PM Harness",
+  "pack_id": "pm",
+  "project_json": "harness.json",
+  "root_agent": "pm-orchestrator",
+  "root_dir": ".pm-harness",
+  "spec_file": "HARNESS-SPEC.md"
+}

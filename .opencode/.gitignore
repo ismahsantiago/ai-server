@@ -1,0 +1,24 @@
+# OpenCode agents, commands, and skills are Markdown-only routing sources.
+# SDK metadata and installed dependencies are host-local and not required.
+node_modules/
+package.json
+package-lock.json
+bun.lock
+
+# Do not carry local runtime or authorization state between hosts.
+settings.local.json
+permissions*.json
+credentials*.json
+auth*.json
+tokens*.json
+cache/
+caches/
+history/
+histories/
+session/
+sessions/
+logs/
+runtime/
+*.log
+.env
+.env.*

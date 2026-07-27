@@ -11,20 +11,15 @@ coverage.xml
 artifacts/
 uv.lock
 
-# AI
-.claude/
-.opencode/
-.codex/
-.pm-harness/
-CLAUDE.md
-AGENTS.md
-
 # Environment files
 .env
 .env.example
 .env.local
 .env.*.local
 .ignore
+
+# This sanitized template is required by the root compatibility scripts.
+!.env.example
 
 # The golden fixture is committed test data, not a real environment file.
 !tests/golden/**/.env
@@ -39,3 +34,73 @@ AGENTS.md
 # OS files
 .DS_Store
 Thumbs.db
+
+# Portable AI-platform sources are committed; host-local state is not.
+.claude/settings.local.json
+.claude/**/settings.local.json
+.claude/**/permissions*.json
+.claude/**/credentials*.json
+.claude/**/auth*.json
+.claude/**/tokens*.json
+.claude/**/cache/
+.claude/**/caches/
+.claude/**/history/
+.claude/**/histories/
+.claude/**/session/
+.claude/**/sessions/
+.claude/**/logs/
+.claude/**/runtime/
+.claude/**/*.log
+.claude/**/.env
+.claude/**/.env.*
+
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/bun.lock
+.opencode/**/permissions*.json
+.opencode/**/credentials*.json
+.opencode/**/auth*.json
+.opencode/**/tokens*.json
+.opencode/**/cache/
+.opencode/**/caches/
+.opencode/**/history/
+.opencode/**/histories/
+.opencode/**/session/
+.opencode/**/sessions/
+.opencode/**/logs/
+.opencode/**/runtime/
+.opencode/**/*.log
+.opencode/**/.env
+.opencode/**/.env.*
+
+# The committed harness is same-project governance. Exclude only runtime residue.
+.pm-harness/**/__pycache__/
+.pm-harness/**/*.py[cod]
+.pm-harness/**/permissions*.json
+.pm-harness/**/credentials*.json
+.pm-harness/**/auth*.json
+.pm-harness/**/tokens*.json
+.pm-harness/**/cache/
+.pm-harness/**/caches/
+.pm-harness/**/session/
+.pm-harness/**/sessions/
+.pm-harness/**/logs/
+.pm-harness/**/runtime/
+.pm-harness/**/*.log
+.pm-harness/**/.env
+.pm-harness/**/.env.*
+
+# Never version local credentials, keys, certificates, or model weights.
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.gguf
+*.ggml
+*.safetensors
+*.ckpt
+*.pt
+*.pth

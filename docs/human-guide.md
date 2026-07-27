@@ -3,6 +3,9 @@
 This guide is the operator path from a repository clone to a local chat
 endpoint. The supported exposure is localhost only.
 
+For transfer to the intended server and continuation by another AI instance,
+start with `docs/next-instance-server-handoff.md`.
+
 ## 1) Prepare the model
 
 Install the Python dependency and place the selected GGUF file under the
@@ -67,6 +70,11 @@ The host tier adds model-file and Docker/Compose checks to structural
 validation. Inspect `$WORKSPACE/manifest.json` to see the resolved host model
 path, `/models/model.gguf` container path, exact image digest, generation
 fingerprint, and helper commands.
+
+These are distinct evidence tiers: structure checks generated contracts, host
+adds local prerequisites and model visibility, and runtime requires a live
+health endpoint. Neither matrix output nor host validation proves inference or
+benchmark success.
 
 Use a new output directory for regeneration. `--force` is limited to a
 generator-owned workspace under `generated/`, but it still replaces that

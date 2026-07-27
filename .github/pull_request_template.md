@@ -2,63 +2,73 @@
 
 ## Summary
 
-TASK-0007 records a fresh independent audit and remediates every confirmed
-repository-local finding that can be closed without inventing live runtime,
-network, model, distribution, or legal evidence. The patch hardens dependency
-installation, audit evidence inputs, model-source validation, generated
-workspace lifecycle and recovery, benchmark evidence, documentation, golden
-fixture drift checks, and installed harness-agent conformance.
+TASK-0012 prepares a minimal portable packet for cloning this repository onto
+the intended server and continuing it with an independent equivalent AI
+instance. It shares the same-project PM Harness, root activation bridges,
+minimal Claude/OpenCode Markdown routers, sanitized compatibility template, and
+an English operator handoff while excluding host-local and runtime state.
 
 ## Why / Context
 
-The Director requested completion of the outstanding technical, security and
-operational audit work. The immutable Spanish pre-remediation deliverables and
-the append-only finding disposition are under
-`audits/audit_opencode_default_gpt-5_25-07-2026_20h23m/`. External Linux/model
-runs, future LAN gateway policy, Codex harness support, and conditional legal
-review are explicitly owned and blocked rather than represented as verified.
+The Director approved KICK-0003 to exercise continuity between instances from
+the same AI provider/model family and capture the resulting operational
+learning. The next event is a clean server clone. The packet must preserve
+governed project history without carrying credentials, permissions, sessions,
+dependencies, model weights, caches, logs, or unsupported runtime claims.
 
 ## Change type
 
 - [ ] Feature (new capability)
-- [x] Fix (corrects existing behavior)
-- [ ] Breaking (changes existing behavior/contract in an incompatible way)
-- [ ] Docs
+- [ ] Fix (corrects existing behavior)
+- [ ] Breaking (changes an existing behavior/contract incompatibly)
+- [x] Docs (portable operator and AI-instance continuity contract)
 - [ ] Chore / internal refactor (no observable behavior change)
 
 ## Risk & risk type
 
-Medium security and availability risk. The patch changes path confinement,
-dependency and audit supply-chain checks, generated secret-file handling,
-archive restoration, container lifecycle cleanup, and evidence contracts.
-Defaults remain localhost-only and fail-closed. Restore preserves displaced
-targets; startup tears down only a stack started by that invocation.
+Medium security and integrity risk. Sharing governance and platform routing
+surfaces could expose host-local authorization/session data or allow stale
+summaries to override executable contracts. Repository-local deny rules,
+source-only platform trees, same-project isolation, redacted evidence, exact
+index review, independent security review, and clean-clone validation bound the
+risk. LAN remains unauthorized and fail-closed.
 
 ## How this was tested
 
 - `python3 -m unittest` — exit 0, 97 tests.
-- `python3 -m unittest tests.test_cli tests.test_ci_contract tests.test_documentation_contract tests.test_harness_agents` — exit 0, 60 tests.
-- `python3 .pm-harness/bin/harness.py agents check` — exit 0 for OpenCode and Claude.
-- `python3 .pm-harness/bin/harness.py wiki check` — exit 0.
-- Frozen audit hashes were recomputed for the three immutable files whose
-  current hashes can be compared directly and matched `meta.md`.
-- The final full CI and independent whole-change security review remain
-  integration gates; no live Docker/model result is claimed here.
+- `python3 .pm-harness/bin/harness.py validate` — exit 0.
+- `python3 .pm-harness/bin/harness.py agents check` — exit 0 for Claude and
+  OpenCode.
+- `python3 .pm-harness/bin/harness.py wiki check` — exit 0 before the final
+  integration-record update and repeated as an integration gate.
+- `git diff --check` — exit 0 for the documentation slice.
+- Generator `doctor --models-path/--out` and `validate --tier host/runtime`
+  syntax was checked against current CLI help.
+- Full isolated CI, exact-index security review, and clean-checkout walkthrough
+  remain pending integration gates; no GGUF/runtime/benchmark pass is claimed.
 
 ## Evidence
 
-Finding-level ownership, changed surfaces, focused tests and formal blockers
-for all 25 findings are in the final reconciliation section of
-`audits/audit_opencode_default_gpt-5_25-07-2026_20h23m/remediation.md`.
-Security approval is already recorded there for SEC7-001/OPS7-001 and
-SEC7-005; aggregate approval is intentionally pending.
+- `docs/next-instance-server-handoff.md` records the authority map, portable
+  inventory/denylist, hash-locked bootstrap, governed resume rules,
+  authorized-GGUF flow, evidence tiers, capture contract, safety recovery, and
+  end-session checklist.
+- `.pm-harness/wiki/pages/current-capability-status.md` compiles the portable
+  continuity and evidence boundaries while preserving the existing roadmap
+  contradiction.
+- `CHANGELOG.md` records the user-visible TASK-0012 addition.
+- Final filename/secret/symlink/large-file review, index-only checkout, no-local
+  clone, and full CI evidence will be supplied by the integration owner.
 
 ## Checklist
 
-- [x] `CHANGELOG.md` has an `[Unreleased]` entry referencing TASK-0007
-- [x] Tests added/updated for behavior-changing fixes
-- [x] `harness.py validate` has prior passing implementation evidence and is a final integration gate
-- [x] Docs updated; `harness.py wiki check` exits 0
-- [x] External/runtime/legal blockers have explicit owners and no unsupported claims
-- [x] Independent whole-change security review approved
-- [x] Full final CI and plan-adherence gates pass
+- [x] `CHANGELOG.md` has an `[Unreleased]` entry referencing TASK-0012.
+- [x] Operator documentation and LLM Wiki describe the same evidence boundary.
+- [x] `.codex/` absence and same-project `.pm-harness/` isolation are explicit.
+- [x] LAN remains unauthorized/fail-closed; no live runtime result is inferred.
+- [x] Focused unit, harness, agent, wiki, and diff checks pass.
+- [ ] Independent whole-packet security review approves the exact candidate.
+- [ ] Index-only and committed `git clone --no-local` walkthroughs pass.
+- [ ] Full isolated CI and final plan/changelog gates pass.
+- [ ] Final staged allowlist/denylist inspection passes before commit.
+- [ ] No push, tag, or release occurs without Director-confirmed publication.

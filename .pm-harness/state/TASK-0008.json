@@ -1,0 +1,70 @@
+{
+  "id": "TASK-0008",
+  "title": "Phase H: host inspection (doctor) — hardware tiering for heterogeneous reused machines",
+  "kind": "task",
+  "owner": "engineering-manager",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [],
+  "artifact_checksum": null,
+  "history": [
+    {
+      "ts": "2026-07-25T14:07:27Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-25T14:08:56Z",
+      "agent": "engineering-manager",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Manager picked up Phase H; read KICK-0002, GATES.md, and the generator baseline at 23cd468"
+    },
+    {
+      "ts": "2026-07-25T14:08:56Z",
+      "agent": "engineering-manager",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Scope analysed against KICK-0002 Phase H spec; delegation target identified (ml-systems-engineer owns detection logic)"
+    },
+    {
+      "ts": "2026-07-25T14:08:56Z",
+      "agent": "engineering-manager",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Plan drafting delegated; complex category requires full plan approved by pm-orchestrator before in_progress"
+    },
+    {
+      "ts": "2026-07-26T00:16:29Z",
+      "agent": "engineering-manager",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Plan approved by pm-orchestrator; delegating implementation to ml-systems-engineer"
+    },
+    {
+      "ts": "2026-07-26T17:09:08Z",
+      "agent": "engineering-manager",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Integration review complete: security approval, approved plan, final override CI, quality gates, wiki and changelog checks verified."
+    },
+    {
+      "ts": "2026-07-26T17:09:08Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Approved after completed engineering integration review and all TASK-0008 Gate 1 evidence."
+    },
+    {
+      "ts": "2026-07-26T17:09:08Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Closed after approved TASK-0008 plan and final quality, security, CI, documentation and harness gates."
+    }
+  ],
+  "plan_ref": "plans/TASK-0008.plan.md"
+}
