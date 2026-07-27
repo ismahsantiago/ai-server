@@ -42,7 +42,14 @@ if [ ! -f "${WORKSPACE}/.env" ] || [ -L "${WORKSPACE}/.env" ]; then
   printf "Refusing to back up a workspace without a regular .env file.\n" >&2
   exit 1
 fi
-ENV_MODE="$(stat -f '%Lp' "${WORKSPACE}/.env" 2>/dev/null || stat -c '%a' "${WORKSPACE}/.env")"
+ENV_MODE="$(python3 - "${WORKSPACE}/.env" <<'PY'
+import os
+import stat
+import sys
+
+print(f"{stat.S_IMODE(os.stat(sys.argv[1], follow_symlinks=False).st_mode):o}")
+PY
+)"
 if [ "${ENV_MODE}" != "600" ]; then
   printf "Refusing to back up .env with unsafe mode %s; expected 600.\n" "${ENV_MODE}" >&2
   exit 1

@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_PATH = ROOT / ".pm-harness" / "bin" / "harness_core.py"
 
 
+@unittest.skipUnless(CORE_PATH.is_file(), "local PM Harness is not present")
 class HarnessAgentContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

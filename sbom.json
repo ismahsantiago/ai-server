@@ -219,6 +219,13 @@
       "version": "0.13.2"
     },
     {
+      "name": "setuptools",
+      "purl": "pkg:pypi/setuptools@81.0.0",
+      "scope": "required",
+      "type": "library",
+      "version": "81.0.0"
+    },
+    {
       "name": "sortedcontainers",
       "purl": "pkg:pypi/sortedcontainers@2.4.0",
       "scope": "required",
