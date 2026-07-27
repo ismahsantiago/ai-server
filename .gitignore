@@ -4,9 +4,12 @@ generated/
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+build/
 .coverage
 coverage.xml
 artifacts/
+uv.lock
 
 # AI
 .claude/
