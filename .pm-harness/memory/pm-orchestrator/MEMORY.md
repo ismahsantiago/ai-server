@@ -20,3 +20,4 @@
 | mem-pm-orchestrator-0018 | decision | project | 4 | 2026-07-26 | engineering-principle, honesty, api-design | Engineering principle ratified 2026-07-25 (TASK-0008), generalizes beyond that task: when a value is |
 | mem-pm-orchestrator-0019 | decision | project | 3 | 2026-07-26 | concurrency, file-ownership, process | Ruling 2026-07-25 for concurrent tasks in one tree (TASK-0008, TASK-0009, TASK-0011 live simultaneou |
 | mem-pm-orchestrator-0020 | decision | project | 4 | 2026-07-26 | license, apache-2.0, task-0011 | TASK-0011 closed on 2026-07-26: Apache-2.0 licensing decision applied and verified. Evidence: LICENS |
+| mem-pm-orchestrator-0021 | feedback | /ai-server/pm-orchestrator/retro-2026-07-28 | 4 | 2026-07-28 | retro, self-improvement, workflow, prompt | Retro 2026-07-28 self-improvement feed (§6):\n\nEngineering Manager proposal (classification: workfl |

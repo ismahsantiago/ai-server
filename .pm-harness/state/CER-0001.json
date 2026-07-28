@@ -1,0 +1,72 @@
+{
+  "id": "CER-0001",
+  "title": "Standup — 2026-07-28",
+  "kind": "ceremony",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "ceremonies/2026-07-28-standup.md",
+    ".pm-harness/ceremonies/2026-07-28-standup.md"
+  ],
+  "artifact_checksum": "sha256:e8ef710a6c8cff007f2db5c83dc88aefd4600ffb31889f9da413fe182850941d",
+  "history": [
+    {
+      "ts": "2026-07-28T02:59:50Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Standup ceremony manifest created; starting compilation"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Standup compilation context built from team plan + state manifests"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Standup report authoring started"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Generating per-manager done/in-progress/blocked/next"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Standup minutes drafted and reconciled against current state manifests"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Standup minutes approved for record"
+    },
+    {
+      "ts": "2026-07-28T03:00:11Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Standup ceremony completed"
+    }
+  ]
+}

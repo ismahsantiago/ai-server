@@ -1,0 +1,72 @@
+{
+  "id": "CER-0002",
+  "title": "Showcase — 2026-07-28",
+  "kind": "ceremony",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "ceremonies/2026-07-28-showcase.md",
+    ".pm-harness/ceremonies/2026-07-28-showcase.md"
+  ],
+  "artifact_checksum": "sha256:13e3372c860cfd8a798ae5f3dc54b1155f6d32d9642bf30dd4875433b79c9449",
+  "history": [
+    {
+      "ts": "2026-07-28T03:03:22Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Showcase manifest created; starting executive-summary compilation"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Selected all harness-closed TASK/ESC entries since last showcase."
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Showcase report authoring started"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Draft minutes being finalized"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Minutes reconciled with current closed-state evidence"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Showcase record approved for closure"
+    },
+    {
+      "ts": "2026-07-28T03:03:26Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Showcase completed"
+    }
+  ]
+}

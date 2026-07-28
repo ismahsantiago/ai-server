@@ -1,0 +1,72 @@
+{
+  "id": "CER-0003",
+  "title": "Retro — 2026-07-28",
+  "kind": "ceremony",
+  "owner": "pm-orchestrator",
+  "created_by": "pm-orchestrator",
+  "status": "closed",
+  "depends_on": [],
+  "artifact_paths": [
+    "ceremonies/2026-07-28-retro.md",
+    ".pm-harness/ceremonies/2026-07-28-retro.md"
+  ],
+  "artifact_checksum": "sha256:0aadd5a231769addf760bdd218fbb68ac9717854394697f80fcb9039e3a19ddc",
+  "history": [
+    {
+      "ts": "2026-07-28T03:10:21Z",
+      "agent": "pm-orchestrator",
+      "from": null,
+      "to": "untouched",
+      "reason": "created"
+    },
+    {
+      "ts": "2026-07-28T03:10:25Z",
+      "agent": "pm-orchestrator",
+      "from": "untouched",
+      "to": "touched",
+      "reason": "Retro manifest created; starting minutes compilation"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "touched",
+      "to": "dirty",
+      "reason": "Collected ≥1 improvement proposal per manager and classified them (§6)"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "dirty",
+      "to": "started",
+      "reason": "Retro minutes authoring started"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "started",
+      "to": "in_progress",
+      "reason": "Retro minutes drafted"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "in_progress",
+      "to": "in_review",
+      "reason": "Retro minutes reconciled against active state manifests"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "in_review",
+      "to": "approved",
+      "reason": "Retro record approved for closure"
+    },
+    {
+      "ts": "2026-07-28T03:10:26Z",
+      "agent": "pm-orchestrator",
+      "from": "approved",
+      "to": "closed",
+      "reason": "Retro ceremony completed"
+    }
+  ]
+}
